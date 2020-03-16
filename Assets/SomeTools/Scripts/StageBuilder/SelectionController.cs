@@ -18,8 +18,6 @@ public class SelectionController : MonoBehaviour
     [SerializeField]
     Material[] selectBoxMaterials;
     [SerializeField]
-    GameObject selectCube;
-    [SerializeField]
     GameObject[] selectCubes;
 
     public GroundBlockType selectedBlockType; //used for mouse button
@@ -41,7 +39,7 @@ public class SelectionController : MonoBehaviour
         MaxGridSize = StageBuilder.MAX_SIZE;
         transform.position = new Vector3((int)(MaxGridSize / 2), 0, (int)(MaxGridSize / 2));
         selectedBlockType = blockPreviewController.GetSelectedMouseBlock();
-        //selectedObject = blockPreviewController.GetSelectedObject();
+        selectedObject = blockPreviewController.GetSelectedObject();
 
         InitializeRange();
     }
@@ -312,11 +310,12 @@ public class SelectionController : MonoBehaviour
         selectedBlockType = blockPreviewController.GetSelectedMouseBlock();
         return selectedBlockType;
     }
-    //public ObjectType GetSelectedPreviewObject()
-    //{
-    //    selectedObject = blockPreviewController.GetSelectedObject();
-    //    return selectedObject;
-    //}
+
+    public ObjectType GetSelectedPreviewObject()
+    {
+        selectedObject = blockPreviewController.GetSelectedObject();
+        return selectedObject;
+    }
     //public DecorationType GetSelectedDecoration()
     //{
     //    selectedObject = blockPreviewController.GetSelectedDecoration();
@@ -329,7 +328,7 @@ public class SelectionController : MonoBehaviour
     }
     public void RemoveHeightFromInput()
     {
-        SetHeight(1f);
+        SetHeight(-1f);
     }
 
     /// <summary>
@@ -368,6 +367,7 @@ public class SelectionController : MonoBehaviour
 
             if (Physics.Raycast(fromTopPosition, direction, out hit))
             {
+
                 if (hit.transform.gameObject.GetComponent<StageObject>() != null)
                 {
                     //height will be the highest block in that tile plus that block's height, same if it's an object
@@ -376,7 +376,7 @@ public class SelectionController : MonoBehaviour
                 }
                 else if (hit.transform.gameObject.GetComponent<StageBlock>() != null)
                 {
-                    StageBlock block = hit.transform.gameObject.GetComponent<StageBlock>();
+                    StageBlock block = hit.transform.GetComponent<StageBlock>();
                     newHei = block.GridPosition.Height + block.GetCurrengBlockHeight();
                 }
                 else
@@ -478,18 +478,18 @@ public class SelectionController : MonoBehaviour
     /// <param name="index"></param>
     public void SetSelectorColor(SelectorMode mode)
     {
-        switch (mode)
-        {
-            case SelectorMode.Default:
-                selectCubes[0].GetComponent<MeshRenderer>().material = selectBoxMaterials[0];
-                break;
-            case SelectorMode.MultiSelect:
-                selectCubes[0].GetComponent<MeshRenderer>().material = selectBoxMaterials[1];
-                break;
-            case SelectorMode.NotAllowed:
-                selectCubes[0].GetComponent<MeshRenderer>().material = selectBoxMaterials[2];
-                break;
-        }
+        //switch (mode)
+        //{
+        //    case SelectorMode.Default:
+        //        selectCubes[0].GetComponent<MeshRenderer>().material = selectBoxMaterials[0];
+        //        break;
+        //    case SelectorMode.MultiSelect:
+        //        selectCubes[0].GetComponent<MeshRenderer>().material = selectBoxMaterials[1];
+        //        break;
+        //    case SelectorMode.NotAllowed:
+        //        selectCubes[0].GetComponent<MeshRenderer>().material = selectBoxMaterials[2];
+        //        break;
+        //}
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 using PlayFab;
@@ -65,5 +66,13 @@ public class HomeController : MonoBehaviour
 
     void Update(){
 
+    }
+
+    public void GoToStageBuilder() {
+        SceneManager.LoadScene("StageBuider");
+    }
+
+    public void GoToPlayTest() {
+        SceneManager.LoadScene("PlayTest");
     }
 }

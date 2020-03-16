@@ -7,22 +7,24 @@ public enum GroundBlockType
     Grass,
     Dirt,
     Rock,
-    Snow
+    Snow,
+    Sand
 }
 
 public enum ObjectType
 {
     Wall,
     Boulder,
-    Rock_Pillar,
-    Trunk,
-    Small_Trunk,
+    Tree,
+    //Rock_Pillar,
+    //Trunk,
+    //Small_Trunk,
     Player_Spawn,
     Enemy_Spawn,
-    Tori,
-    Lantern,
-    Lamp_Ground,
-    Item
+    //Tori,
+    //Lantern,
+    //Lamp_Ground,
+    //Item
 }
 
 public enum DecorationType
@@ -83,24 +85,26 @@ public class StageItemModel
                 Dirt,
                 Rock,
                 Snow,
+                Sand,
                 //objects
                 Wall,
                 Boulder,
-                RockPillar,
-                Trunk,
-                SmallTrunk,
+                Tree,
+                //RockPillar,
+                //Trunk,
+                //SmallTrunk,
                 PlayerSpawn,
                 EnemySpawn,
-                Tori,
-                Lantern,
-                LampGround,
-                Item,
-                //decoration
-                GrassSmall,
-                GrassMedium,
-                GrassLarge,
-                Pebble,
-                Bush
+                //Tori,
+                //Lantern,
+                //LampGround,
+                //Item,
+                ////decoration
+                //GrassSmall,
+                //GrassMedium,
+                //GrassLarge,
+                //Pebble,
+                //Bush
             };
 
             return allModels;
@@ -121,7 +125,8 @@ public class StageItemModel
                 Grass,
                 Dirt,
                 Rock,
-                Snow
+                Snow,
+                Sand
             };
 
             return blocks;
@@ -140,15 +145,8 @@ public class StageItemModel
             {
                     Wall,
                     Boulder,
-                    RockPillar,
-                    Trunk,
-                    SmallTrunk,
-                    PlayerSpawn,
-                    EnemySpawn,
-                    Tori,
-                    Lantern,
-                    LampGround,
-                    Item
+                    Tree,
+                    PlayerSpawn
             };
 
             return objects;
@@ -165,13 +163,13 @@ public class StageItemModel
 
             randomObjects = new List<StageItemModel>()
             {
-                    //Wall,
+                    Wall,
                     Boulder,
-                    RockPillar,
-                    Trunk,
-                    SmallTrunk,
+                    //RockPillar,
+                    //Trunk,
+                    //SmallTrunk,
                     //Tori,
-                    Lantern,
+                    //Lantern,
                     //LampGround,
             };
 
@@ -274,6 +272,23 @@ public class StageItemModel
         }
     }
 
+    public static StageItemModel Sand
+    {
+        get
+        {
+            StageItemModel model = new StageItemModel();
+            model.JsonKey = "sand";
+            model.GroundBlockType = GroundBlockType.Sand;
+            model.IsGround = true;
+            model.IsStackable = true;
+            model.IsDestructible = true;
+            model.ItemHeight = 1f;
+            model.PrefabPath = "Prefabs/StagePrefabs/stage_block_sand";
+
+            return model;
+        }
+    }
+
 
     /*---------------ITEMS / OBJECTS-----------*/
     public static StageItemModel Wall
@@ -286,7 +301,7 @@ public class StageItemModel
             model.IsStackable = true;
             model.IsDestructible = true;
             model.ItemHeight = 1f;
-            model.PrefabPath = "Prefabs/stage_obt_wall";
+            model.PrefabPath = "Prefabs/StagePrefabs/stage_obt_wall";
 
             return model;
         }
@@ -319,58 +334,58 @@ public class StageItemModel
             model.ObjectType = ObjectType.Boulder;
             model.IsDestructible = true;
             model.ItemHeight = 1f;
-            model.PrefabPath = "Prefabs/stage_obt_boulder";
-            model.PreviewScale = 0.5f;
+            model.PrefabPath = "Prefabs/StagePrefabs/stage_obt_boulder";
+            model.PreviewScale = 1f; //0.5
             //model.PreviewOffSet = -0.5f;
 
             return model;
         }
     }
 
-    public static StageItemModel RockPillar
+    public static StageItemModel Tree
     {
         get
         {
             StageItemModel model = new StageItemModel();
-            model.JsonKey = "rock_pillar";
-            model.ObjectType = ObjectType.Rock_Pillar;
+            model.JsonKey = "tree";
+            model.ObjectType = ObjectType.Tree;
             model.IsDestructible = true;
             model.ItemHeight = 2.8f;
-            model.PrefabPath = "Prefabs/stage_obt_rock_pillar";
-            model.PreviewScale = 0.5f;
+            model.PrefabPath = "Prefabs/StagePrefabs/stage_obt_tree";
+            model.PreviewScale = 0.4f;
             return model;
         }
     }
 
-    public static StageItemModel Trunk
-    {
-        get
-        {
-            StageItemModel model = new StageItemModel();
-            model.JsonKey = "trunk";
-            model.ObjectType = ObjectType.Trunk;
-            model.IsDestructible = true;
-            model.ItemHeight = 1f;
-            model.PrefabPath = "Prefabs/stage_obt_trunk";
-            model.PreviewScale = 0.3f;
-            return model;
-        }
-    }
+    //public static StageItemModel Trunk
+    //{
+    //    get
+    //    {
+    //        StageItemModel model = new StageItemModel();
+    //        model.JsonKey = "trunk";
+    //        model.ObjectType = ObjectType.Trunk;
+    //        model.IsDestructible = true;
+    //        model.ItemHeight = 1f;
+    //        model.PrefabPath = "Prefabs/stage_obt_trunk";
+    //        model.PreviewScale = 0.3f;
+    //        return model;
+    //    }
+    //}
 
-    public static StageItemModel SmallTrunk
-    {
-        get
-        {
-            StageItemModel model = new StageItemModel();
-            model.JsonKey = "small_trunk";
-            model.ObjectType = ObjectType.Small_Trunk;
-            model.IsDestructible = true;
-            model.ItemHeight = 1f;
-            model.PrefabPath = "Prefabs/stage_obt_small_trunk";
-            model.PreviewScale = 0.5f;
-            return model;
-        }
-    }
+    //public static StageItemModel SmallTrunk
+    //{
+    //    get
+    //    {
+    //        StageItemModel model = new StageItemModel();
+    //        model.JsonKey = "small_trunk";
+    //        model.ObjectType = ObjectType.Small_Trunk;
+    //        model.IsDestructible = true;
+    //        model.ItemHeight = 1f;
+    //        model.PrefabPath = "Prefabs/stage_obt_small_trunk";
+    //        model.PreviewScale = 0.5f;
+    //        return model;
+    //    }
+    //}
 
     public static StageItemModel PlayerSpawn
     {
@@ -381,7 +396,7 @@ public class StageItemModel
             model.ObjectType = ObjectType.Player_Spawn;
             model.IsDestructible = false;
             model.ItemHeight = 0.25f;
-            model.PrefabPath = "Prefabs/stage_obt_playerspawn";
+            model.PrefabPath = "Prefabs/StagePrefabs/stage_obt_playerSpawn";
 
             return model;
         }
@@ -396,75 +411,75 @@ public class StageItemModel
             model.ObjectType = ObjectType.Enemy_Spawn;
             model.IsDestructible = false;
             model.ItemHeight = 0.25f;
-            model.PrefabPath = "Prefabs/stage_obt_enemyspawn";
+            model.PrefabPath = "Prefabs/StagePrefabs/stage_obt_enemySpawn";
 
             return model;
         }
     }
 
-    public static StageItemModel Tori
-    {
-        get
-        {
-            StageItemModel model = new StageItemModel();
-            model.JsonKey = "tori";
-            model.ObjectType = ObjectType.Tori;
-            model.IsDestructible = false;
-            model.ItemHeight = 6f;
-            model.PrefabPath = "Prefabs/stage_obt_tori";
-            model.PreviewScale = 0.2f;
-            model.PreviewOffSet = -2.5f;
+    //public static StageItemModel Tori
+    //{
+    //    get
+    //    {
+    //        StageItemModel model = new StageItemModel();
+    //        model.JsonKey = "tori";
+    //        model.ObjectType = ObjectType.Tori;
+    //        model.IsDestructible = false;
+    //        model.ItemHeight = 6f;
+    //        model.PrefabPath = "Prefabs/stage_obt_tori";
+    //        model.PreviewScale = 0.2f;
+    //        model.PreviewOffSet = -2.5f;
 
-            return model;
-        }
-    }
+    //        return model;
+    //    }
+    //}
 
-    public static StageItemModel Lantern
-    {
-        get
-        {
-            StageItemModel model = new StageItemModel();
-            model.JsonKey = "lantern";
-            model.ObjectType = ObjectType.Lantern;
-            model.IsDestructible = false;
-            model.ItemHeight = 4f;
-            model.PrefabPath = "Prefabs/stage_obt_lantern";
-            model.PreviewScale = 0.3f;
-            model.PreviewOffSet = -0.25f;
+    //public static StageItemModel Lantern
+    //{
+    //    get
+    //    {
+    //        StageItemModel model = new StageItemModel();
+    //        model.JsonKey = "lantern";
+    //        model.ObjectType = ObjectType.Lantern;
+    //        model.IsDestructible = false;
+    //        model.ItemHeight = 4f;
+    //        model.PrefabPath = "Prefabs/stage_obt_lantern";
+    //        model.PreviewScale = 0.3f;
+    //        model.PreviewOffSet = -0.25f;
 
-            return model;
-        }
-    }
+    //        return model;
+    //    }
+    //}
 
-    public static StageItemModel LampGround
-    {
-        get
-        {
-            StageItemModel model = new StageItemModel();
-            model.JsonKey = "lamp_ground";
-            model.ObjectType = ObjectType.Lamp_Ground;
-            model.IsDestructible = false;
-            model.ItemHeight = 1f;
-            model.PrefabPath = "Prefabs/stage_obt_lamp_ground";
+    //public static StageItemModel LampGround
+    //{
+    //    get
+    //    {
+    //        StageItemModel model = new StageItemModel();
+    //        model.JsonKey = "lamp_ground";
+    //        model.ObjectType = ObjectType.Lamp_Ground;
+    //        model.IsDestructible = false;
+    //        model.ItemHeight = 1f;
+    //        model.PrefabPath = "Prefabs/stage_obt_lamp_ground";
 
-            return model;
-        }
-    }
+    //        return model;
+    //    }
+    //}
 
-    public static StageItemModel Item
-    {
-        get
-        {
-            StageItemModel model = new StageItemModel();
-            model.JsonKey = "item";
-            model.ObjectType = ObjectType.Item;
-            model.IsDestructible = true;
-            model.ItemHeight = 1f;
-            model.PrefabPath = "Prefabs/stage_item_default";
+    //public static StageItemModel Item
+    //{
+    //    get
+    //    {
+    //        StageItemModel model = new StageItemModel();
+    //        model.JsonKey = "item";
+    //        model.ObjectType = ObjectType.Item;
+    //        model.IsDestructible = true;
+    //        model.ItemHeight = 1f;
+    //        model.PrefabPath = "Prefabs/stage_item_default";
 
-            return model;
-        }
-    }
+    //        return model;
+    //    }
+    //}
 
 
     /*--------------- DECORATION-----------*/

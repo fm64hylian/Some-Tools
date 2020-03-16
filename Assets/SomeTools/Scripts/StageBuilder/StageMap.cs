@@ -73,7 +73,57 @@ public class StageMap : MonoBehaviour
         cmc.MergeObjects(blocks);
 
         //adding collider to new object
-        blocks.AddComponent<MeshCollider>();
+        MeshCollider collider = blocks.AddComponent<MeshCollider>();
+        collider.convex = true;
+    }
+   
+    /// <summary>
+    /// merge meshes from same material(type) blocks
+    /// </summary>
+    /// <param name="blocks"></param>
+    public void MergeBlocksByMaterial(GameObject blocks)
+    {
+        List<StageBlock> blockList = new List<StageBlock>(blocks.GetComponentsInChildren<StageBlock>());
+        bool allSameBlocks = false;
+        int maxSameBlocks = 0;
+        string maxmodelKey= "";
+
+        //check if all blocks are the same
+        for (int i =0; i < StageItemModel.Blocks.Count;i++) {
+            StageItemModel model = StageItemModel.Blocks[i];
+            List<StageBlock> checkedBlocks = blockList.FindAll(x => x.Model.JsonKey.Equals(model.JsonKey));
+            if (checkedBlocks != null && checkedBlocks.Count == blockList.Count) {
+                allSameBlocks = true;
+                maxmodelKey = model.JsonKey;
+                maxSameBlocks = checkedBlocks.Count;
+            } else if (checkedBlocks != null && maxSameBlocks < checkedBlocks.Count) {
+                maxSameBlocks = checkedBlocks.Count;
+                maxmodelKey = model.JsonKey;
+            }
+        }
+
+        //if all blocks are the same
+        if (allSameBlocks) {
+            blockList.ForEach(x => Destroy(x.gameObject.GetComponent<BoxCollider>()));
+            MergeBlocks(blocks);
+            return;
+        }
+
+        //else we merge the most used blocks
+        List<StageBlock> sameBlocks = blockList.FindAll(x => x.Model.JsonKey.Equals(maxmodelKey));
+        sameBlocks.ForEach(x => Destroy(x.gameObject.GetComponent<BoxCollider>()));
+        GameObject mergedBlocks = new GameObject();
+        mergedBlocks.name = "merged_blocks";
+        mergedBlocks.transform.parent = blocks.transform;
+        sameBlocks.ForEach(x => x.gameObject.transform.parent = mergedBlocks.transform);
+
+        //adding custom mesh
+        var cmc = gameObject.AddComponent<CustomMeshCombiner>();
+        cmc.MergeObjects(mergedBlocks);
+
+        //adding collider to new object
+        MeshCollider collider = mergedBlocks.AddComponent<MeshCollider>();
+        collider.convex = true;
     }
 
     public void Clean()

@@ -23,6 +23,7 @@ public class UIMenuController : MonoBehaviour
     GameObject clearConfirmationScreen;
     [SerializeField]
     GameObject[] ItemButtons;
+    //[SerializeField]
     //GameObject clearMenu;
     StageBlock selectedBlock;
     StageObject selectedItem;
@@ -33,12 +34,12 @@ public class UIMenuController : MonoBehaviour
     //UIPopupList heiList; //TODO disable until figuring height out
     UILabel labGridRow;
     UILabel labGridCol;
-    //ToggleButtonController toggleModeButton;
+    ToggleButtonController toggleModeButton;
     //ToggleButtonController toggleDecoButton;
     //UILabel labGridHei;
 
     private void Start() {             
-        //toggleModeButton = controlMenu.GetComponentsInChildren<ToggleButtonController>()[0];
+        toggleModeButton = controlMenu.GetComponentsInChildren<ToggleButtonController>()[0];
         //toggleDecoButton = controlMenu.GetComponentsInChildren<ToggleButtonController>()[1];
         //modeList = controlMenu.GetComponentsInChildren<UIPopupList>()[1];
         posLabel = tileMenu.GetComponentsInChildren<UILabel>()[0];
@@ -106,6 +107,7 @@ public class UIMenuController : MonoBehaviour
     //{
     //    clearMenu.SetActive(true);
     //}
+
     //public void HideClearConfirmationMenu()
     //{
     //    clearMenu.SetActive(false);
@@ -115,6 +117,7 @@ public class UIMenuController : MonoBehaviour
     {
         clearConfirmationScreen.SetActive(true);
     }
+
     public void HideClearGriMenu()
     {
         clearConfirmationScreen.SetActive(false);
@@ -129,10 +132,10 @@ public class UIMenuController : MonoBehaviour
     {
         for (int i = 0; i < ItemButtons.Length; i++)
         {
-            UISprite highlight = ItemButtons[i].GetComponentsInChildren<UISprite>()[1];
+            UISprite highlight = ItemButtons[i].GetComponentsInChildren<UISprite>()[2]; //1
             highlight.enabled = false;
         }
-        pressedButton.GetComponentsInChildren<UISprite>()[1].enabled = true;        
+        pressedButton.GetComponentsInChildren<UISprite>()[2].enabled = true;   //1
     }
 
     /// <summary>
@@ -280,8 +283,7 @@ public class UIMenuController : MonoBehaviour
     /// <returns></returns>
     public StageBuildMode GetSelectedMode()
     {
-        return StageBuildMode.Stacking;
-        //return (StageBuildMode)toggleModeButton.State;
+        return (StageBuildMode)toggleModeButton.State;
     }
 
     /// <summary>
@@ -289,7 +291,7 @@ public class UIMenuController : MonoBehaviour
     /// </summary>
     public void SetSelectedModeFromButton()
     {
-        //toggleModeButton.ChangeState();
+        toggleModeButton.ChangeState();
     }
 
     /// <summary>

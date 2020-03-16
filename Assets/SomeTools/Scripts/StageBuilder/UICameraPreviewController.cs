@@ -9,15 +9,15 @@ public class UICameraPreviewController : MonoBehaviour
 {
     public float spaceBetweenItems = 1.5f;
     int MAX_BLOCKS = StageItemModel.Blocks.Count;
-    //int MAX_OBJECTS = StageItemModel.Objects.Count;
+    int MAX_OBJECTS = StageItemModel.Objects.Count;
     //int MAX_DECOS = StageItemModel.Decorations.Count;
     int currentBlockIndex = 0;
-    //int currentObjectIndex = 0;
+    int currentObjectIndex = 0;
     Vector3 startingPoint;
     Vector3 startingPointObject;
     //Vector3 startingPointDeco;
     GroundBlockType selectedBlockType;
-    //ObjectType selectedObject;
+    ObjectType selectedObject;
     //DecorationType selectedDecoration;
     StageBuildMode currentMode;
 
@@ -27,7 +27,7 @@ public class UICameraPreviewController : MonoBehaviour
         startingPointObject = transform.localPosition + Vector3.right * 4;
         //startingPointDeco = transform.localPosition + Vector3.right * 8;
         selectedBlockType = GroundBlockType.Grass;
-        //selectedObject = ObjectType.Wall;
+        selectedObject = ObjectType.Wall;
         //selectedDecoration = DecorationType.Grass_Small;
     }
 
@@ -47,16 +47,16 @@ public class UICameraPreviewController : MonoBehaviour
                 selectedBlockType = (GroundBlockType)currentBlockIndex;
                 break;
 
-            //case StageBuildMode.FreePlacing:
-            //    transform.position += Vector3.up * spaceBetweenItems;
-            //    currentObjectIndex++;
-            //    if (currentObjectIndex >= MAX_OBJECTS)
-            //    {
-            //        transform.localPosition = startingPointObject;
-            //        currentObjectIndex = 0;
-            //    }
-            //    selectedObject = (ObjectType)currentObjectIndex;
-            //    break;
+            case StageBuildMode.FreePlacing:
+                transform.position += Vector3.up * spaceBetweenItems;
+                currentObjectIndex++;
+                if (currentObjectIndex >= MAX_OBJECTS)
+                {
+                    transform.localPosition = startingPointObject;
+                    currentObjectIndex = 0;
+                }
+                selectedObject = (ObjectType)currentObjectIndex;
+                break;
         }
     }
 
@@ -75,16 +75,16 @@ public class UICameraPreviewController : MonoBehaviour
                 }
                 selectedBlockType = (GroundBlockType)currentBlockIndex;
                 break;
-            //case StageBuildMode.FreePlacing:
-            //    currentObjectIndex--;
-            //    transform.position += Vector3.down * spaceBetweenItems;
-            //    if (currentObjectIndex < 0)
-            //    {
-            //        transform.localPosition = startingPointObject + (Vector3.up * (MAX_OBJECTS - 1) * spaceBetweenItems);
-            //        currentObjectIndex = MAX_OBJECTS - 1;
-            //    }
-            //    selectedObject = (ObjectType)currentObjectIndex;
-            //    break;
+            case StageBuildMode.FreePlacing:
+                currentObjectIndex--;
+                transform.position += Vector3.down * spaceBetweenItems;
+                if (currentObjectIndex < 0)
+                {
+                    transform.localPosition = startingPointObject + (Vector3.up * (MAX_OBJECTS - 1) * spaceBetweenItems);
+                    currentObjectIndex = MAX_OBJECTS - 1;
+                }
+                selectedObject = (ObjectType)currentObjectIndex;
+                break;
         }
     }
 
@@ -93,14 +93,15 @@ public class UICameraPreviewController : MonoBehaviour
         return selectedBlockType;
     }
 
-    //public ObjectType GetSelectedObject()
-    //{
-    //    return selectedObject;
-    //}
+    public ObjectType GetSelectedObject()
+    {
+        return selectedObject;
+    }
 
-    //public int GetObjectIndex() {
-    //    return currentObjectIndex;
-    //}
+    public int GetObjectIndex()
+    {
+        return currentObjectIndex;
+    }
 
     //public DecorationType GetSelectedDecoration()
     //{
@@ -117,8 +118,8 @@ public class UICameraPreviewController : MonoBehaviour
         {
             case StageBuildMode.Stacking:
                 return selectedBlockType.ToString();
-            //case StageBuildMode.FreePlacing:
-            //    return selectedObject.ToString();
+            case StageBuildMode.FreePlacing:
+                return selectedObject.ToString();
             default:
                 return selectedBlockType.ToString();
         }
@@ -143,11 +144,11 @@ public class UICameraPreviewController : MonoBehaviour
                  startingPoint.y + currentBlockIndex * spaceBetweenItems,
                  transform.localPosition.z);
                 return;
-            //case StageBuildMode.FreePlacing:
-            //    transform.localPosition = new Vector3(startingPointObject.x,
-            //      startingPoint.y + currentObjectIndex * spaceBetweenItems,
-            //      transform.localPosition.z);
-                //return;
+            case StageBuildMode.FreePlacing:
+                transform.localPosition = new Vector3(startingPointObject.x,
+                  startingPoint.y + currentObjectIndex * spaceBetweenItems,
+                  transform.localPosition.z);
+                return;
         }
     }
 }

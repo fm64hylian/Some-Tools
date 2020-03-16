@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 using SimpleJSON;
 using System.IO;
@@ -28,6 +29,7 @@ public class StageBuilder : MonoBehaviour
     public static int MAX_SIZE = 40;
     public static int MAX_HEIGHT = 20;
     public static int MAX_PLAYERS = 8;
+    public static string STAGE_PATH = "Assets/SomeTools/Resources/Stages/";
 
     [SerializeField]
     UIMenuController menuController;
@@ -43,7 +45,7 @@ public class StageBuilder : MonoBehaviour
 
     GroundBlockType selectedBlockType;
     ObjectType selectedObjectType;
-    DecorationType selectedDecoType;
+    //DecorationType selectedDecoType;
     StageBuildMode Mode = StageBuildMode.Stacking;
     TouchMode touchMode = TouchMode.Selecting;
     StageObject SelectedMouseObject;
@@ -54,7 +56,7 @@ public class StageBuilder : MonoBehaviour
     List<StageObject> objects = new List<StageObject>();
     //List<StageDecoration> decorations = new List<StageDecoration>();
     int spawnCount = 0;
-    string STAGE_PATH = "Assets/BOUNCING_STRIKE_STAGEBUILDER/Resources/Stages/";
+    //string STAGE_PATH = "Assets/BOUNCING_STRIKE_STAGEBUILDER/Resources/Stages/";
     bool isAligned = true;
 
     KeyCode addKey = KeyCode.Z;
@@ -101,7 +103,7 @@ public class StageBuilder : MonoBehaviour
         }
 
         LoadPreviewBlocks();
-        //LoadPreviewObjects();
+        LoadPreviewObjects();
         UpdateSelectedItemType();
         //LoadPreviewItems();
 
@@ -118,9 +120,7 @@ public class StageBuilder : MonoBehaviour
         //toggle mode hotkey
         if (Input.GetKeyDown(KeyCode.M))
         {
-            Mode = Mode == StageBuildMode.FreePlacing ? StageBuildMode.Stacking : StageBuildMode.FreePlacing;
-            menuController.SetSelectedModeFromButton();
-            UpdateMode();
+            ToggleMode();
             return;
         }
 
@@ -277,10 +277,10 @@ public class StageBuilder : MonoBehaviour
                             break;
 
                         case TouchMode.Drawing:
-                            //UpdateSelectedItemType();
+                            UpdateSelectedItemType();
 
                             RaycastHit clickedObject = GetRaycastFromClick();
-                            if (clickedObject.transform.gameObject.GetComponent<StageBlock>() != null)
+                            if (clickedObject.transform && clickedObject.transform.gameObject.GetComponent<StageBlock>() != null)
                             {
                                 //AddDecoration(hitInfo.point, selectedDecoType); //hitInfo.transform.position
                                 AddStageObject(clickedObject.point, selectedObjectType);
@@ -438,9 +438,18 @@ public class StageBuilder : MonoBehaviour
     {
         RaycastHit hitInfo;
         Ray rayMainCamera = Camera.main.ScreenPointToRay(Input.mousePosition);
+        int everythingbutUIMask = (1 >> LayerMask.NameToLayer("UI"));
 
-        Physics.Raycast(rayMainCamera, out hitInfo, 100f);
+        Physics.Raycast(rayMainCamera, out hitInfo, 100f, everythingbutUIMask);
+        Debug.Log("pos "+Camera.main.ScreenToWorldPoint(Input.mousePosition) +" hit object "+hitInfo.transform);
         return hitInfo;
+
+        /*
+         *         Ray rayCastUI = UICamera.currentCamera.ScreenPointToRay(Input.mousePosition);
+         RaycastHit hitUI;
+         int uiMask = (1 << LayerMask.NameToLayer("UI"));
+         return Physics.Raycast(rayCastUI, out hitUI, 100f, uiMask);
+         */
     }
 
     bool CheckCointinuousPress()
@@ -469,7 +478,7 @@ public class StageBuilder : MonoBehaviour
     void InitializeTileSelector()
     {
         tileSelector.SetActive(false);
-        tileSelector.GetComponentInChildren<MeshRenderer>().material = selectController.GetSelectShaders()[1];
+        //tileSelector.GetComponentInChildren<MeshRenderer>().material = selectController.GetSelectShaders()[1];
     }
 
     void ResetTileSelector()
@@ -496,12 +505,12 @@ public class StageBuilder : MonoBehaviour
 
     public void SetTileSelectorColor(bool isDraw)
     {
-        int index = isDraw ? 1 : 2;
-        tileSelector.GetComponentInChildren<MeshRenderer>().material = selectController.GetSelectShaders()[index];
+        //int index = isDraw ? 1 : 2;
+        //tileSelector.GetComponentInChildren<MeshRenderer>().material = selectController.GetSelectShaders()[index];
     }
 
 
-    void SelectNewItemFromClick(StageObject newSelection)
+    void UpdateSelectedItemFromClick(StageObject newSelection)
     {
         if (SelectedMouseObject != newSelection)
         {
@@ -529,9 +538,9 @@ public class StageBuilder : MonoBehaviour
             case StageBuildMode.Stacking:
                 selectedBlockType = selectController.GetSelectedPreviewBlock();
                 break;
-            //case StageBuildMode.FreePlacing:
-            //    selectedObjectType = selectController.GetSelectedPreviewObject();
-            //    break;
+            case StageBuildMode.FreePlacing:
+                selectedObjectType = selectController.GetSelectedPreviewObject();
+                break;
         }
     }
 
@@ -566,47 +575,47 @@ public class StageBuilder : MonoBehaviour
     {
         float spaceBetween = cameraPreviewController.spaceBetweenItems;
 
-        //for (int i = 0; i < StageItemModel.Objects.Count; i++)
-        //{
-        //    StageItemModel itemModel = StageItemModel.GetModelFromKey(StageItemModel.Objects[i].JsonKey);
-        //    GameObject prefabObject = Resources.Load(itemModel.PrefabPath) as GameObject;
-
-        //    //setting position TODO link 4f with variable in cameraPreviewController
-        //    Vector3 previewPos = prefabPreview.transform.position;
-        //    Vector3 indexPos = new Vector3(previewPos.x + 4f + (itemModel.PreviewScale * itemModel.PreviewOffSet), //offset
-        //        previewPos.y + (i * spaceBetween),  // +0.5f
-        //        3.5f);
-
-        //    GameObject ObtInstance = Instantiate(prefabObject, indexPos, Quaternion.identity);
-        //    ObtInstance.transform.localScale = new Vector3(
-        //        itemModel.PreviewScale, itemModel.PreviewScale, itemModel.PreviewScale);
-        //    ObtInstance.transform.SetParent(prefabPreview.transform);
-        //    ObtInstance.gameObject.layer = LayerMask.NameToLayer("PreviewBlock");
-        //    SetAllChildrenLayer(ObtInstance.transform, "PreviewBlock");
-        //}
-
-        ///TEST LOADING ITEMS
         for (int i = 0; i < StageItemModel.Objects.Count; i++)
         {
-            GameObject ObtInstance;
+            StageItemModel itemModel = StageItemModel.GetModelFromKey(StageItemModel.Objects[i].JsonKey);
+            GameObject prefabObject = Resources.Load(itemModel.PrefabPath) as GameObject;
 
-                StageItemModel itemModel = StageItemModel.GetModelFromKey(StageItemModel.Objects[i].JsonKey);
-                GameObject prefabObject = Resources.Load(itemModel.PrefabPath) as GameObject;
+            //setting position TODO link 4f with variable in cameraPreviewController
+            Vector3 previewPos = prefabPreview.transform.position;
+            Vector3 indexPos = new Vector3(previewPos.x + 4f + (itemModel.PreviewScale * itemModel.PreviewOffSet), //offset
+                previewPos.y + (i * spaceBetween),  // +0.5f
+                3.5f);
 
-                //setting position TODO link 4f with variable in cameraPreviewController
-                Vector3 previewPos = prefabPreview.transform.position;
-                Vector3 indexPos = new Vector3(previewPos.x + 4f + (itemModel.PreviewScale * itemModel.PreviewOffSet), //offset
-                    previewPos.y + (i * spaceBetween),  // +0.5f
-                    3.5f);
-
-                ObtInstance = Instantiate(prefabObject, indexPos, Quaternion.identity);
-                ObtInstance.transform.localScale = new Vector3(
-    itemModel.PreviewScale, itemModel.PreviewScale, itemModel.PreviewScale);
-
+            GameObject ObtInstance = Instantiate(prefabObject, indexPos, Quaternion.identity);
+            ObtInstance.transform.localScale = new Vector3(
+                itemModel.PreviewScale, itemModel.PreviewScale, itemModel.PreviewScale);
             ObtInstance.transform.SetParent(prefabPreview.transform);
             ObtInstance.gameObject.layer = LayerMask.NameToLayer("previewItems");
             SetAllChildrenLayer(ObtInstance.transform, "previewItems");
         }
+
+        ///TEST LOADING ITEMS
+        //    for (int i = 0; i < StageItemModel.Objects.Count; i++)
+        //    {
+        //        GameObject ObtInstance;
+
+        //            StageItemModel itemModel = StageItemModel.GetModelFromKey(StageItemModel.Objects[i].JsonKey);
+        //            GameObject prefabObject = Resources.Load(itemModel.PrefabPath) as GameObject;
+
+        //            //setting position TODO link 4f with variable in cameraPreviewController
+        //            Vector3 previewPos = prefabPreview.transform.position;
+        //            Vector3 indexPos = new Vector3(previewPos.x + 4f + (itemModel.PreviewScale * itemModel.PreviewOffSet), //offset
+        //                previewPos.y + (i * spaceBetween),  // +0.5f
+        //                3.5f);
+
+        //            ObtInstance = Instantiate(prefabObject, indexPos, Quaternion.identity);
+        //            ObtInstance.transform.localScale = new Vector3(
+        //itemModel.PreviewScale, itemModel.PreviewScale, itemModel.PreviewScale);
+
+        //        ObtInstance.transform.SetParent(prefabPreview.transform);
+        //        ObtInstance.gameObject.layer = LayerMask.NameToLayer("previewItems");
+        //        SetAllChildrenLayer(ObtInstance.transform, "previewItems");
+        //    }
     }
 
     void SetAllChildrenLayer(Transform trans, string name)
@@ -621,9 +630,10 @@ public class StageBuilder : MonoBehaviour
     void ToggleItemMenuFromClick()
     {
         ToggleSelectMode();
-        //UpdateSelectedItemType();
+        UpdateSelectedItemType();
         if (CheckUIClick())
         {
+            Debug.Log("clicked UI");
             return;
         }
 
@@ -647,16 +657,18 @@ public class StageBuilder : MonoBehaviour
         RaycastHit hitInfo = GetRaycastFromClick();
         //Ray rayMainCamera = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        //if (Physics.Raycast(rayMainCamera, out hitInfo))
-        //{
-        var hittedObject = hitInfo.transform.gameObject;
-        if (hittedObject.GetComponent<StageObject>() != null)
+        if (hitInfo.transform != null) //Physics.Raycast(rayMainCamera, out hitInfo)
         {
+            var hittedObject = hitInfo.transform.gameObject;
+        Debug.Log("hit info object " + hittedObject);
+        if (hittedObject.GetComponent<StageObject>() != null)
+        {            
             StageObject sim = hittedObject.GetComponent<StageObject>();
-            SelectNewItemFromClick(sim);
+            Debug.Log("hitted object  " + sim.name);
+            UpdateSelectedItemFromClick(sim);
             return sim;
         }
-        //}
+        }
         return null;
     }
 
@@ -675,14 +687,16 @@ public class StageBuilder : MonoBehaviour
     public void UpdateMode()
     {
         Mode = menuController.GetSelectedMode();
+        Debug.Log("seleced mode "+Mode);
         cameraPreviewController.SetCurrentMode(Mode);
     }
 
-    //public void ToggleMode(bool isStacking)
-    //{
-    //    Mode = isStacking ? StageBuildMode.Stacking : StageBuildMode.Decoration;
-    //    cameraPreviewController.SetCurrentMode(Mode);
-    //}
+    public void ToggleMode()
+    {
+    Mode = Mode == StageBuildMode.FreePlacing? StageBuildMode.Stacking : StageBuildMode.FreePlacing;
+    menuController.SetSelectedModeFromButton();
+    UpdateMode();
+    }
 
     /// <summary>
     /// TESTING UNDO comming soon
@@ -1197,7 +1211,7 @@ public class StageBuilder : MonoBehaviour
         item.SetPosition(placePosition);
         item.Model = itemModel;
 
-        obtInstance.name = "Obt" + itemModel.JsonKey + "_" + item.transform.position.x.ToString("F2") + "_" +
+        obtInstance.name = "Obt_" + itemModel.JsonKey + "_" + item.transform.position.x.ToString("F2") + "_" +
             item.transform.position.z.ToString("F2") + "_" + item.transform.position.y.ToString("F1");
 
         objects.Add(item);
@@ -1476,9 +1490,9 @@ public class StageBuilder : MonoBehaviour
     }
     public StageMap LoadStageFromJsonInGame(StageMap map)
     {
-        //merginf blocks
-        blocks.ForEach(x => Destroy(x.gameObject.GetComponent<BoxCollider>()));
-        map.MergeBlocks(GameObject.Find("groundBlocks"));
+        //merging blocks TODO double check
+        //blocks.ForEach(x => Destroy(x.gameObject.GetComponent<BoxCollider>()));
+        //map.MergeBlocksByMaterial(GameObject.Find("groundBlocks")); //MergeBlocks
 
         GameObject wallColliders = GameObject.Find("wallColliders");
         if (wallColliders == null)
@@ -1799,4 +1813,8 @@ public class StageBuilder : MonoBehaviour
     {
         //coming soon
     }
-}
+
+    public void BackToHome() {
+        SceneManager.LoadScene("Home");
+    }
+} 

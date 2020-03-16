@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StageObjectState
-{
-    public int HP;
-}
+//public class StageObjectState
+//{
+//    public int HP;
+//}
 public class StageObject : MonoBehaviour
 {
     public StageItemModel Model;
     public GridPosition GridPosition;
     public float YRotation = 0f;
     public bool IsSelected = false;
-    public int DamageStateIndex; //0 for full damage(disappear), meshWrapper size for no damage
-    GameObject activeState;
-    StageObjectState state = new StageObjectState();
+    //public int DamageStateIndex; //0 for full damage(disappear), meshWrapper size for no damage
+    //GameObject activeState;
+    //StageObjectState state = new StageObjectState();
     //Color tempColor;
     //[SerializeField]
     //StageObjectMeshWrapper wrapper;
@@ -24,17 +24,15 @@ public class StageObject : MonoBehaviour
     {
         //wrapper = GetComponent<StageObjectMeshWrapper>();
         //DamageStateIndex = wrapper.GetDamageList().Count - 1;
-        state.HP = DamageStateIndex;
+        //state.HP = DamageStateIndex;
         //TODO link to wrapper when we have the meshes
-        currentMaterialColor = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>() == null ?
-            currentMaterialColor = gameObject.transform.GetChild(0).GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color
-        :  gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color;
+        currentMaterialColor = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color;
 
         //Model is initialized on instances only. it won't be initialized on prefab previews
-        if (Model != null)
-        {
-            InitializeBlockDamage();
-        }        
+        //if (Model != null)
+        //{
+        //    InitializeBlockDamage();
+        //}        
     }
 
     public void SetPosition(Vector3 pos)
@@ -89,26 +87,34 @@ public class StageObject : MonoBehaviour
     }
 
     public void HighLight() {
+        if (gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>()  == null) {
+            return;
+        }
+        gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = Color.yellow;
         //if (wrapper.GetActiveBlock().GetComponent<MeshRenderer>()!= null) {
         //    wrapper.GetActiveBlock().GetComponent<MeshRenderer>().material.color = Color.yellow;
         //}
     }
 
     public void UnHightlight() {
+        if (gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>() == null){
+            return;
+        }
+        gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = currentMaterialColor;
         //if (wrapper.GetActiveBlock().GetComponent<MeshRenderer>() != null)
         //{
         //    wrapper.GetActiveBlock().GetComponent<MeshRenderer>().material.color = currentMaterialColor;
         //}
     }
 
-    public void DamageObject(int damage = 1)
-    {        
-        if (state.HP == 0)
-            return;
+    //public void DamageObject(int damage = 1)
+    //{        
+    //    if (state.HP == 0)
+    //        return;
 
-        state.HP -= damage;
-        //wrapper.SetActiveBlock(state.HP);
-    }
+    //    state.HP -= damage;
+    //    //wrapper.SetActiveBlock(state.HP);
+    //}
 
 
     public void SetNewDamageState(int newIndex)

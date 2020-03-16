@@ -14,7 +14,7 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     SelectionController selection;
 
-    float speed = 25f;
+    float speed = 15f; //25
     Quaternion originalRotation;
     Vector3 centerPoint;
     Camera cam;
