@@ -1,2 +1,4 @@
 # Some-Tools
-several UI, playfab tools
+Several UI, playfab tools and more.
+
+Everything is in development, so check it often!
