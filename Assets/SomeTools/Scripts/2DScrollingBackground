@@ -1,0 +1,70 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+//2d scrolling background related to the camera x movement
+public class 2DScrollingBackground : MonoBehaviour
+{
+    GameObject[] levels; //all background sprites
+    Camera mainCam;
+    Vector2 screenbounds;
+    float choke = 0.25f;// used to deal with the small space between images
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        mainCam = GetComponent<Camera>();
+        screenbounds = mainCam.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, transform.position.z));
+
+        for (int i =0; i < levels.Length;i++) {
+            LoadBackgroudObjects(levels[i]);
+        }
+    }
+
+    void LoadBackgroudObjects(GameObject obt) {
+        float wid = obt.GetComponent<SpriteRenderer>().bounds.size.x - choke;
+
+        int childsNeeded = Mathf.CeilToInt(screenbounds.x * 2 / wid);
+        GameObject clone = Instantiate(obt) as GameObject;
+
+        for (int i =0; i < childsNeeded; i++) {
+            GameObject c = Instantiate(clone) as GameObject;
+            c.transform.SetParent(obt.transform);
+            c.transform.position = new Vector3(wid * i, obt.transform.position.y, obt.transform.position.z);
+            c.name = obt.name +"_"+i;
+        }
+        Destroy(clone);
+        Destroy(obt.GetComponent<SpriteRenderer>());
+    }
+
+
+    // Update is called once per frame
+    void LateUpdate()
+    {
+        for (int i =0; i < levels.Length;i++) {
+            //levels[i].transform.position = Vector3.left * Time.deltaTime; 
+            RepositionObjects(levels[i]);
+        }   
+    }
+
+    void RepositionObjects(GameObject obt) {
+        Transform[] children = obt.GetComponentsInChildren<Transform>();
+        if (children.Length > 1) {
+            GameObject firstChild = children[1].gameObject;
+            GameObject lastChild = children[children.Length - 1].gameObject;
+
+            float halfObtWid = lastChild.GetComponent<SpriteRenderer>().bounds.extents.x - choke;
+
+            if (transform.position.x + screenbounds.x > lastChild.transform.position.x + halfObtWid) {
+                firstChild.transform.SetAsLastSibling();
+                firstChild.transform.position = new Vector3(lastChild.transform.position.x + halfObtWid * 2,
+                    lastChild.transform.position.y, lastChild.transform.position.z);
+            } else if (transform.position.x - screenbounds.x < lastChild.transform.position.x - halfObtWid) {
+                lastChild.transform.SetAsFirstSibling();
+                lastChild.transform.position = new Vector3(firstChild.transform.position.x - halfObtWid * 2,
+                    firstChild.transform.position.y, firstChild.transform.position.z);
+            }
+
+        }
+    }
+}

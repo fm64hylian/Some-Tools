@@ -14,9 +14,74 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 53fcf98997879aa4ebe5569d38d69e20, type: 2}
   mSprites:
+  - name: bomb
+    x: 0
+    y: 1087
+    width: 480
+    height: 480
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: deku_shield
+    x: 481
+    y: 1109
+    width: 406
+    height: 458
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
   - name: empty_bottle
     x: 0
-    y: 32
+    y: 606
+    width: 480
+    height: 480
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: gilded_sword
+    x: 0
+    y: 125
+    width: 480
+    height: 480
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: goron_tunic
+    x: 481
+    y: 852
+    width: 256
+    height: 256
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: hylian_shield
+    x: 0
+    y: 1568
     width: 480
     height: 480
     borderLeft: 0
@@ -29,9 +94,61 @@ MonoBehaviour:
     paddingBottom: 0
   - name: kokiri_sword
     x: 481
-    y: 32
+    y: 1568
     width: 480
     height: 480
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: kokiri_sword_mm
+    x: 962
+    y: 1568
+    width: 480
+    height: 480
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: kokiri_tunic
+    x: 481
+    y: 595
+    width: 256
+    height: 256
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: razor_sword
+    x: 1443
+    y: 1568
+    width: 480
+    height: 480
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: zora_tunic
+    x: 481
+    y: 338
+    width: 256
+    height: 256
     borderLeft: 0
     borderRight: 0
     borderTop: 0
