@@ -22,9 +22,22 @@ public class HomeController : MonoBehaviour
         //var request = new LoginWithCustomIDRequest { CustomId = "64646464", CreateAccount = false };
         //PlayFabClientAPI.LoginWithCustomID(request, OnLoginSuccess, OnLoginFailure);
         FMPlayfabLoginBonus.Instance.OnResult = DisplayLoginBuses;
-        FMPlayfabLogin.LoginCustomID("64646464", OnLoginSuccess);
+        if (!FMPlayfabLogin.IsClientLoggedIn()) {
+            FMPlayfabLogin.LoginCustomID("64646464", OnLoginSuccess);
+            return;
+        }
+        DisplayInfo();
     }
 
+    void DisplayInfo() {
+        labUser.text = ClientSessionData.Instance.UserName;
+
+        labCurrencyCO.text = ClientSessionData.Instance.currencyCO.ToString();
+        labCurrencyPC.text = ClientSessionData.Instance.currencyPC.ToString();
+
+        //LOGIN BONUS            
+        FMPlayfabLoginBonus.Instance.CheckLoginBonus();
+    }
 
     void OnLoginSuccess(LoginResult res)
     {

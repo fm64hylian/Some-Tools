@@ -6,13 +6,16 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/SomeTools/Scenes/IntroLoader.unity
+    guid: 694d494c2c6ae5343a9e51d998200a5c
+  - enabled: 1
     path: Assets/SomeTools/Scenes/Home.unity
     guid: feaa99e5ef09a2b42bf0d3937ba0ba6c
   - enabled: 1
     path: Assets/FM_SANDBOX/FMPlayfabAchievements/DeleteME/Scenes/ShowPlayfabAchivements.unity
     guid: bb9e878cd15597f41852d7a22358ad1f
   - enabled: 1
-    path: Assets/SomeTools/Scenes/Store.unity
+    path: Assets/SomeTools/Scenes/Inventory.unity
     guid: 0ea6cb1a85d6b704db26e3c2531429b9
   - enabled: 1
     path: Assets/SomeTools/Scenes/StageBuilder.unity
@@ -20,4 +23,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/SomeTools/Scenes/PlayTest.unity
     guid: 76169941c60a0aa4e9a36da318b09c9b
+  - enabled: 1
+    path: Assets/SomeTools/Scenes/Store.unity
+    guid: 1c666ef4b252a1e46a2fbc336d791802
   m_configObjects: {}

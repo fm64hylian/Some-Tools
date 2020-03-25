@@ -13,6 +13,7 @@ public class ClientSessionData : MonoBehaviour
     public List<FMUserAchievement> UserAchievements = new List<FMUserAchievement>();
     public List<FMRewardItem> Rewads = new List<FMRewardItem>();
     public List<CatalogItem> CatalogItems = new List<CatalogItem>();
+    public List<FMInventoryItem> InventoryItems = new List<FMInventoryItem>();
 
     public int currencyCO;
     public int currencyPC;
