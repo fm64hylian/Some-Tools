@@ -13,7 +13,7 @@ public class IntroLoader : MonoBehaviour
     [SerializeField]
     UILabel labLoading;
     float progress =0f;
-    //float total = 0f;
+    float total = 0.2f;
     bool loadComplete = false;    
 
     void Start()
@@ -42,7 +42,7 @@ public class IntroLoader : MonoBehaviour
             ClientSessionData.Instance.UserName = result.AccountInfo.TitleInfo.DisplayName;
             labLoading.text = "... Loading user info ...";
             progress += 0.2f;
-            //total += progress;
+            total += progress;
 
             //get currency
             PlayFabClientAPI.GetUserInventory(new GetUserInventoryRequest(), resInventory =>
@@ -59,6 +59,7 @@ public class IntroLoader : MonoBehaviour
                 inventoryItems = resInventory.Inventory;
                 labLoading.text = "... Loading Inventory ...";
                 progress += 0.2f;
+                //total += progress;
 
                 //statistics
                 PlayfabUtils.Instance.GetPlayerStatistics(null, statRes =>
@@ -67,6 +68,7 @@ public class IntroLoader : MonoBehaviour
                     ClientSessionData.Instance.Statistics = FMPlayfabUserStatistics.Items;
                     labLoading.text = "... Loading User Statistics ...";
                     progress += 0.2f;
+                    total += progress;
 
                     //get title Data
                     PlayfabUtils.Instance.GetTitleData(new List<string> { "fm_achievements", "fm_rewards" }, titleRes =>
@@ -78,19 +80,22 @@ public class IntroLoader : MonoBehaviour
                         ClientSessionData.Instance.Rewads = FMPlayfabReward.Items;
 
                         labLoading.text = "... Loading Title Data ...";
-                        progress += 0.2f;
+                        progress += 0.1f;
+                        total += progress;
 
                         //get catalogItems
                         PlayFabClientAPI.GetCatalogItems(new GetCatalogItemsRequest(), catalogRes =>
                         {
                             ClientSessionData.Instance.CatalogItems = catalogRes.Catalog;
 
-                            //rossing CatalogItem and ItemInstance items
-                            StoreInventoryItemsFromPlayfab(catalogRes.Catalog, inventoryItems);
+                            //crossing CatalogItem and ItemInstance items
+                            FMPlayFabInventory.StoreItemsFromPlayfab(catalogRes.Catalog, inventoryItems);
+                            ClientSessionData.Instance.InventoryItems = FMPlayFabInventory.Items;
 
                             //TODO cross catalog and instance items;
                             labLoading.text = "... Loading Catalog Items ...";
-                            progress += 0.2f;
+                            progress += 0.1f;
+                            total += progress;
                         }
                         , error => { Debug.Log("error on get catalog info"); });
                         //end catalog
@@ -119,48 +124,8 @@ public class IntroLoader : MonoBehaviour
             GoToHome();            
             return;
         }
-        progressBar.value = Mathf.Lerp(progress, 1f, Time.deltaTime);
-    }
-
-    /// <summary>
-    /// TODO check where to put
-    /// </summary>
-    void StoreInventoryItemsFromPlayfab(List<CatalogItem> catalogItems, List<ItemInstance> inventoryItems) {
-        List<FMInventoryItem> FMInventoryItems = new List<FMInventoryItem>();
-        for (int i =0; i < inventoryItems.Count; i++) {
-            ItemInstance iitem = inventoryItems[i];
-            CatalogItem cItem = catalogItems.Find(x => x.ItemId.Equals(iitem.ItemId));
-            if (cItem != null) {
-                FMInventoryItem invItem = new FMInventoryItem();
-                invItem.DisplayName = cItem.DisplayName;
-                invItem.CatalogID = cItem.ItemId;
-                invItem.InstanceID = iitem.ItemInstanceId;
-                invItem.Description = cItem.Description;
-                invItem.SpriteName = cItem.ItemImageUrl;
-                invItem.Amount = cItem.IsStackable ? (int)iitem.RemainingUses : -1;
-                invItem.Tags = cItem.Tags;
-                invItem.Prices = cItem.VirtualCurrencyPrices;
-                if (!string.IsNullOrEmpty(cItem.CustomData)) {
-                    Debug.Log("item custom json "+cItem.CustomData);
-                    JSONNode jsonEffects = JSON.Parse(cItem.CustomData);
-                    Dictionary<string, string> dicEffect = new Dictionary<string, string>();
-                    dicEffect.Add(jsonEffects["effect"].Value, jsonEffects["value"]);
-                    invItem.Effects = dicEffect;
-                }
-
-                //custom item instance data
-                if (iitem.CustomData != null && iitem.CustomData.ContainsKey("is_favorite")) {
-                    invItem.IsFavorite = bool.Parse(iitem.CustomData["is_favorite"]);
-                }
-                if (iitem.CustomData != null && iitem.CustomData.ContainsKey("is_equipped")) {
-                    invItem.IsEquipped = bool.Parse(iitem.CustomData["is_equipped"]);
-                }
-
-                FMInventoryItems.Add(invItem);
-            }
-        }
-        ClientSessionData.Instance.InventoryItems = FMInventoryItems;
-    }
+        progressBar.value = Mathf.Lerp(progress, total, Time.deltaTime);
+    }   
 
     void GoToHome() {
         SceneManager.LoadScene("Home");

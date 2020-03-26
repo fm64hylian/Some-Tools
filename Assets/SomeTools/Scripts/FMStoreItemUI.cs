@@ -17,7 +17,7 @@ public class FMStoreItemUI : MonoBehaviour
     [HideInInspector]
     public CatalogItem Item;
     public Action<FMStoreItemUI> OnSelected;
-    bool isSelected;
+    bool isSelected = false;
 
     public bool IsSelected {
         get {
@@ -26,6 +26,7 @@ public class FMStoreItemUI : MonoBehaviour
         set {
             if (value != isSelected)
             {
+                Debug.Log("chaging color ");
                 GetComponent<UISprite>().color = isSelected ? selectedColor : unSelectedColor;
                 value = isSelected;                
             }

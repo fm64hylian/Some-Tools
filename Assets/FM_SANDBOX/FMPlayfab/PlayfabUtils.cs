@@ -56,6 +56,20 @@ public class PlayfabUtils : MonoBehaviour
         PlayFabClientAPI.GetTitleData(request, onCallBack, onError);
     }
 
+    public void PurhaseItem(CatalogItem item, string vc, Action<PurchaseItemResult> onPurchase, Action<PlayFabError> onError) {
+        uint price;
+        item.VirtualCurrencyPrices.TryGetValue(vc, out price);
+        var request = new PurchaseItemRequest()
+        {
+            CatalogVersion = "Main Catalog",
+            ItemId = item.ItemId,
+            Price =(int)price,
+            VirtualCurrency = vc
+        };
+
+        PlayFabClientAPI.PurchaseItem(request, onPurchase, onError);
+    }
+
     //////////////////////
     // CLOUDSCRIPS      //
     //////////////////////
@@ -92,5 +106,10 @@ public class PlayfabUtils : MonoBehaviour
         args.Add("unclaimed_achievements", UAjson.ToString());
 
         ExecuteCloudscript("ClaimAchievementReward",args, OnRewardsClaimed, OnError);
+    }
+
+    public void SellItem(string instanceID, string VC, Action<ExecuteCloudScriptResult> OnRewardsClaimed, Action<PlayFabError> OnError) {
+        object args = new { soldItemInstanceId = instanceID , requestedVcType = VC };
+        ExecuteCloudscript("SellItem", args, OnRewardsClaimed, OnError);
     }
 }

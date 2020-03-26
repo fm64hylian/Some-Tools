@@ -13,6 +13,8 @@ public class FMInventoryItemUI : MonoBehaviour
     GameObject equipedIcon;
     [SerializeField]
     UIToggle checkFavorite;
+    [SerializeField]
+    UILabel labAmount;
     public Action<FMInventoryItemUI> OnSelected;
     [HideInInspector]
     public bool isFavorite;
@@ -31,6 +33,11 @@ public class FMInventoryItemUI : MonoBehaviour
         if (!string.IsNullOrEmpty(iitem.SpriteName)){
             spriteItem.spriteName = iitem.SpriteName;
         }
+
+        labAmount.text = iitem.IsStackable ? "x "+ iitem.Amount.ToString() : "";
+
+        //if equipment, show E
+        equipedIcon.SetActive(!iitem.IsItem() && iitem.IsEquipped);
     }
 
     public void OnCLicked() {
@@ -42,6 +49,7 @@ public class FMInventoryItemUI : MonoBehaviour
 
     public void UpdateIsFavorite() {
         isFavorite = checkFavorite.value;
+        Item.IsFavorite = isFavorite;
     }
 
     public void Unselect() {

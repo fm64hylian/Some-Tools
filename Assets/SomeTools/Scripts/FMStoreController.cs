@@ -14,25 +14,31 @@ public class FMStoreController : MonoBehaviour
     [SerializeField]
     GameObject itemDetail;
 
+    UILabel labCO;
+    UILabel labPC;
+
+    //item detail UI
     UILabel labItenName;
     UISprite itemSprite;
     UILabel labDescription;
+    UILabel labOwned;
     UIButton buttonCO;
     UIButton buttonPC;
 
     FMStoreItemUI selectedItem;
 
     void Start() {
-        UILabel labCO = header.GetComponentsInChildren<UILabel>()[2];
-        UILabel labPC = header.GetComponentsInChildren<UILabel>()[3];
+        labCO = header.GetComponentsInChildren<UILabel>()[2];
+        labPC = header.GetComponentsInChildren<UILabel>()[3];
 
         labCO.text = ClientSessionData.Instance.currencyCO.ToString();
         labPC.text = ClientSessionData.Instance.currencyPC.ToString();
 
         //getting selectedIdem UI
         labItenName = itemDetail.GetComponentsInChildren<UILabel>()[0];
-        itemSprite = itemDetail.GetComponentsInChildren<UISprite>()[0];
+        itemSprite = itemDetail.GetComponentsInChildren<UISprite>()[1];
         labDescription = itemDetail.GetComponentsInChildren<UILabel>()[1];
+        labOwned = itemDetail.GetComponentsInChildren<UILabel>()[3];
         buttonCO = itemDetail.GetComponentsInChildren<UIButton>()[0];
         buttonPC = itemDetail.GetComponentsInChildren<UIButton>()[1];
 
@@ -62,9 +68,12 @@ public class FMStoreController : MonoBehaviour
         }
 
         itemGrid.Reposition();
+        FilterByItem();
     }
 
     void DisplaySelectedItemInfo(FMStoreItemUI item) {
+        buttonCO.isEnabled = true;
+        buttonPC.isEnabled = true;
 
         if (selectedItem != null) {
             selectedItem.Unselect();
@@ -92,7 +101,86 @@ public class FMStoreController : MonoBehaviour
             buttonPC.isEnabled = false;
         }
 
+        FMInventoryItem invItem = ClientSessionData.Instance.InventoryItems.Find(x => x.CatalogID.Equals(item.Item.ItemId));
+        labOwned.text = invItem != null ? invItem.Amount.ToString() : "0";
+
         selectedItem = item;
+    }
+
+    public void BuyWithCO() {
+        uint COprice;
+        bool hasCO = selectedItem.Item.VirtualCurrencyPrices.TryGetValue("CO", out COprice);
+        if (hasCO && ClientSessionData.Instance.currencyCO >= COprice) {
+            PurchaseSelectedItem("CO", COprice);
+        }
+    }
+
+    public void BuyWithPC() {
+        uint PCprice;
+        bool hasPC = selectedItem.Item.VirtualCurrencyPrices.TryGetValue("PC", out PCprice);
+        if (hasPC && ClientSessionData.Instance.currencyCO >= PCprice) {
+            PurchaseSelectedItem("PC", PCprice);
+        }
+    }
+
+    void PurchaseSelectedItem(string vc, uint price) {
+        if (vc.Equals("CO")) {
+            ClientSessionData.Instance.currencyCO -= (int)price;
+        } else if (vc.Equals("PC")) {
+            ClientSessionData.Instance.currencyPC -= (int)price;
+        }
+
+        PlayfabUtils.Instance.PurhaseItem(selectedItem.Item, vc,OnPurchased, error => { Debug.Log("error on purchase"); });
+    }
+
+    void OnPurchased(PurchaseItemResult res) {
+        Debug.Log("ITEM BOUGHT (" + res.Items.Count + ") " + res.Items[0].DisplayName);
+
+        Debug.Log("inventory count " + ClientSessionData.Instance.InventoryItems.Count);
+        //updating UI
+        labCO.text = ClientSessionData.Instance.currencyCO.ToString();
+        labPC.text = ClientSessionData.Instance.currencyPC.ToString();
+        
+        //add to inventory
+        FMInventoryItem inviItem = ClientSessionData.Instance.InventoryItems.Find(x => x.CatalogID.Equals(res.Items[0].ItemInstanceId));        
+
+        //if there is already an instance id, we just add 1
+        if (inviItem != null && inviItem.IsStackable) {
+            inviItem.Amount += 1;
+            labOwned.text = inviItem.Amount.ToString();
+            Debug.Log("inventory new count (stack)" + ClientSessionData.Instance.InventoryItems.Count);
+            return;
+        }
+
+        //if the item is new or not stackable, we add it to the inventory
+        if (inviItem == null) {
+            CatalogItem cItem = ClientSessionData.Instance.CatalogItems.Find(x => x.ItemId.Equals(res.Items[0].ItemId));
+            FMPlayFabInventory.AddInventoryItem(res.Items[0], ClientSessionData.Instance.InventoryItems, cItem);
+            Debug.Log("inventory new count "+ ClientSessionData.Instance.InventoryItems.Count);
+        }        
+    }
+
+
+    public void FilterByItem() {
+        Filter("Item");
+    }
+
+    public void FilterByWeapon() {
+        Filter("Weapon");
+    }
+
+    public void FilterByArmor() {
+        Filter("Armor");
+    }
+
+    void Filter(string itemClass) {
+        for (int i =0; i < itemGrid.GetComponentsInChildren<Transform>(true).Length;i++) {
+            FMStoreItemUI item = itemGrid.GetComponentsInChildren<Transform>(true)[i].GetComponent<FMStoreItemUI>();
+            if (item != null) {
+                item.gameObject.SetActive(item.Item.ItemClass.Equals(itemClass));
+            }            
+        }
+        itemGrid.Reposition();
     }
 
     public void BackToHome()
