@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public Vector3 StartPosition;
     Rigidbody rb;
     float speed = 6f;
-    Vector3 inputVetor;
+    float maxVelocity = 4f;
+    Vector3 inputVector;
     bool isJumping;
     void Start()
     {
@@ -17,18 +19,33 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        inputVetor = new Vector3(Input.GetAxis("Horizontal")* speed,
+        inputVector = new Vector3(Input.GetAxis("Horizontal")* speed,
             rb.velocity.y, Input.GetAxis("Vertical")* speed);
-        transform.LookAt(transform.position + new Vector3(inputVetor.x, 0 , inputVetor.z));
-        rb.velocity = inputVetor * speed;
+        transform.LookAt(transform.position + new Vector3(inputVector.x, 0 , inputVector.z));
+        rb.velocity = inputVector * speed;
 
-        if (Input.GetKey(KeyCode.Z)) {
+        //jump
+        if (Input.GetKey(KeyCode.Z) && !isJumping) {            
             rb.AddForce(Vector3.up * 20f, ForceMode.VelocityChange);
+            rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxVelocity);
+            //isJumping = true;
+        }
+
+        //if player falls
+        if (transform.position.y < -3f) {
+            ResetPosition();            
         }
     }
 
-    private void FixedUpdate()
-    {
-        rb.velocity = inputVetor;
+    private void FixedUpdate(){
+        rb.velocity = inputVector;
+    }
+
+    public void ResetPosition() {
+        rb.velocity = Vector3.zero;
+        transform.position = StartPosition;
+        isJumping = false;
+
+        gameObject.SetActive(true);
     }
 }

@@ -38,7 +38,7 @@ public class UIMenuController : MonoBehaviour
     //ToggleButtonController toggleDecoButton;
     //UILabel labGridHei;
 
-    private void Start() {             
+    private void Start() {
         toggleModeButton = controlMenu.GetComponentsInChildren<ToggleButtonController>()[0];
         //toggleDecoButton = controlMenu.GetComponentsInChildren<ToggleButtonController>()[1];
         //modeList = controlMenu.GetComponentsInChildren<UIPopupList>()[1];
@@ -67,36 +67,36 @@ public class UIMenuController : MonoBehaviour
         HideClearGriMenu();
 
         //set highlight buttons
-        for (int i = 0; i < ItemButtons.Length; i++)
-        {
+        for (int i = 0; i < ItemButtons.Length; i++) {
             UISprite highlight = ItemButtons[i].GetComponentsInChildren<UISprite>()[1];
             highlight.enabled = false;
         }
         helpMenu.SetActive(false);
+
+        //DISABLE TILE FOR NOW
+        //ItemButtons[2].GetComponent<UIButton>().state = UIButtonColor.State.Disabled;
+        //ItemButtons[2].GetComponent<UIButton>().isEnabled = false;
+        //ItemButtons[4].GetComponent<UIButton>().state = UIButtonColor.State.Disabled;
+        //ItemButtons[4].GetComponent<UIButton>().isEnabled = false;
     }
 
-    private void Update()
-    {
+    private void Update(){
         labpreviewBlock.text = previewController.DisplaySelectedItemName().ToString().Replace("_", " ");
-
-        if (Input.GetKeyDown(KeyCode.H))
-        {
+        if (Input.GetKeyDown(KeyCode.H)){
             ToggleHelpMenu();
         }
     }
 
-    public void DisplayPosition(int row, int col, float hei)
-    {
+    public void DisplayPosition(int row, int col, float hei){
         posLabel.text = "Row : " + row + "\nCol : " + col + "\nHei : " + hei.ToString("F1");
     }
 
-    public void DisplayTileMenu()
-    {
+    public void DisplayTileMenu(){
         tileMenu.SetActive(true); //clearMenu
         //CheckIfBlockHasSlope();
     }
-    public void HideTileMenu()
-    {
+
+    public void HideTileMenu(){
         tileMenu.SetActive(false);//clearMenu
         if ( selectedItem != null) {
             selectedItem.UnHightlight();
@@ -113,25 +113,20 @@ public class UIMenuController : MonoBehaviour
     //    clearMenu.SetActive(false);
     //}
 
-    public void DisplayClearGridMenu()
-    {
+    public void DisplayClearGridMenu(){
         clearConfirmationScreen.SetActive(true);
     }
 
-    public void HideClearGriMenu()
-    {
+    public void HideClearGriMenu(){
         clearConfirmationScreen.SetActive(false);
     }
 
-    public void HighlightPressedButtonFromIndex(int index)
-    {
+    public void HighlightPressedButtonFromIndex(int index){
         HighlightPressedButton(ItemButtons[index]);
     }
 
-    public void HighlightPressedButton(GameObject pressedButton)
-    {
-        for (int i = 0; i < ItemButtons.Length; i++)
-        {
+    public void HighlightPressedButton(GameObject pressedButton){
+        for (int i = 0; i < ItemButtons.Length; i++){
             UISprite highlight = ItemButtons[i].GetComponentsInChildren<UISprite>()[2]; //1
             highlight.enabled = false;
         }
@@ -142,8 +137,7 @@ public class UIMenuController : MonoBehaviour
     // true if all grid values are valid
     /// </summary>
     /// <returns></returns>
-    public bool CheckGridSizeInput(int maxsize)
-    {
+    public bool CheckGridSizeInput(int maxsize){
         return labGridRow.text.Length > 0 && int.Parse(labGridRow.text) > 0
             && int.Parse(labGridRow.text) <= maxsize && labGridCol.text.Length > 0
             && int.Parse(labGridCol.text) > 0 && int.Parse(labGridCol.text) <= maxsize;
@@ -154,27 +148,24 @@ public class UIMenuController : MonoBehaviour
     /// TODO see what to do with height
     /// </summary>
     /// <returns></returns>
-    public int[] GetGridInputValues()
-    {
+    public int[] GetGridInputValues(){
         int rowValue = int.Parse(labGridRow.text) > 0 ? int.Parse(labGridRow.text) : 1;
         int colValue = int.Parse(labGridCol.text) > 0 ? int.Parse(labGridCol.text) : 1;
         return new int[] { rowValue, colValue };
     }
 
     //after selecting the height or loading a stage, controlMenu is toggled
-    public void DisplayMainMenu()
-    {
+    public void DisplayMainMenu(){
         gridSizeMenu.SetActive(false);
         controlMenu.SetActive(true);
+        Debug.Log("tile menu pos after" + tileMenu.transform.position);
     }
 
-    void ToggleHelpMenu()
-    {
+    void ToggleHelpMenu(){
         helpMenu.SetActive(!helpMenu.activeInHierarchy);
     }
 
-    public void SelectItem(StageObject item)
-    {
+    public void SelectItem(StageObject item){
         selectedItem = item;
         selectedItem.IsSelected = true;
         selectedItem.HighLight();
@@ -182,10 +173,8 @@ public class UIMenuController : MonoBehaviour
         //SetHeightDataFromItem();
     }
 
-    public void UnselelectItem()
-    {
-        if (selectedItem != null)
-        {
+    public void UnselelectItem(){
+        if (selectedItem != null){
             selectedItem.IsSelected = false;
             selectedItem.UnHightlight();
             selectedItem = null;
@@ -195,10 +184,8 @@ public class UIMenuController : MonoBehaviour
     /// <summary>
     /// fixed 90 degree rotation
     /// </summary>
-    public void RotateItemFromButtonFixed()
-    {
-        if (selectedItem != null)
-        {
+    public void RotateItemFromButtonFixed(){
+        if (selectedItem != null){
             selectedItem.AddRotation();
             float rot = selectedItem.YRotation;
             //rounding rotation to closest angle (0, 90, 180, 270)
@@ -206,11 +193,9 @@ public class UIMenuController : MonoBehaviour
 
             float distance = 400f;
             float roundedValue = float.NaN;
-            foreach (float f in fixedAngles)
-            {
+            foreach (float f in fixedAngles){
                 float d = Mathf.Abs(rot - f);
-                if (d < distance)
-                {
+                if (d < distance){
                     distance = d;
                     roundedValue = f;
                 }
@@ -220,21 +205,18 @@ public class UIMenuController : MonoBehaviour
         }
     }
 
-    public void RotateItemFromButtonLeft()
-    {
+    public void RotateItemFromButtonLeft(){
         selectedItem.RotateFreely(false);
     }
 
-    public void RotateItemFromButtonright()
-    {
+    public void RotateItemFromButtonright(){
         selectedItem.RotateFreely(true);
     }
 
     /// <summary>
     /// IF ITEM IT CHANGES THE ITEM
     /// </summary>
-    public void ChangeItemDamage()
-    {
+    public void ChangeItemDamage(){
         //int selectedIndex = damageList.items.IndexOf(damageList.value);
         //if (selectedItem.GetComponent<InventoryItem>()!= null) {
         //    InventoryItem item= selectedItem.GetComponent<InventoryItem>();
@@ -248,8 +230,7 @@ public class UIMenuController : MonoBehaviour
     /// <summary>
     /// sets UiPopUPlist height options depending on the selected block
     /// </summary>
-    void SetHeightDataFromItem()
-    {
+    void SetHeightDataFromItem(){
         //heiList.Clear();
         //heiList.AddItem("Height 100%");
 
@@ -281,16 +262,14 @@ public class UIMenuController : MonoBehaviour
     /// gets the selected index(int) from ToggleButtonController
     /// </summary>
     /// <returns></returns>
-    public StageBuildMode GetSelectedMode()
-    {
+    public StageBuildMode GetSelectedMode(){
         return (StageBuildMode)toggleModeButton.State;
     }
 
     /// <summary>
     /// used if the user toggle smode using the hotkey
     /// </summary>
-    public void SetSelectedModeFromButton()
-    {
+    public void SetSelectedModeFromButton(){
         toggleModeButton.ChangeState();
     }
 
@@ -315,8 +294,7 @@ public class UIMenuController : MonoBehaviour
     /// disables SlopeCheck if selected block does not have slope option (only available for block)
     /// TODO use when we have slope meshes
     /// </summary>
-    void CheckIfBlockHasSlope()
-    {
+    void CheckIfBlockHasSlope(){
         //SlopeCheck.transform.gameObject.SetActive(selectedItem.wrapper.HasSlope());
     }
 

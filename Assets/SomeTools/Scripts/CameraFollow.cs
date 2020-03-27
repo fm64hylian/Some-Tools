@@ -25,15 +25,14 @@ public class CameraFollow : MonoBehaviour
     {
         //rotate
         if (Input.GetKey(KeyCode.A)) {
-            transform.RotateAround(target.transform.position, Vector3.left, 8f);
+            transform.RotateAround(target.transform.position, Vector3.up, 4f);
             return;
         }
 
         if (Input.GetKey(KeyCode.D)) {
-            transform.RotateAround(target.transform.position, Vector3.right, 8f);
+            transform.RotateAround(target.transform.position, Vector3.down, 4f);
             return;
         }
-
 
         Vector3 smoothedPos = Vector3.Lerp(transform.position, target.position + offset ,smoothSpeed); //Time.deltaTime
         transform.position = smoothedPos;

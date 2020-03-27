@@ -10,6 +10,10 @@ public class PlayTestController : MonoBehaviour
     UIPopupList stageNames;
     [SerializeField]
     PlayerController player;
+    [SerializeField]
+    GameObject noStagesWarning;
+    [SerializeField]
+    UILabel labCurrency;
 
     string filePath = StageBuilder.STAGE_PATH;
     List<string> stagePaths = new List<string>();
@@ -20,12 +24,13 @@ public class PlayTestController : MonoBehaviour
 
     void Start()
     {
+        labCurrency.text = ClientSessionData.Instance.currencyCO.ToString();
+        noStagesWarning.SetActive(false);
         LoadStageNames();
 
         //loading player
         player.gameObject.SetActive(false);
     }
-
 
      void LoadStageNames(){
 
@@ -35,14 +40,19 @@ public class PlayTestController : MonoBehaviour
         if (stages.Length == 0) {
             stageNames.AddItem("NO STAGES");
             selectedIndex = -1;
+
+            //display warning
+            noStagesWarning.SetActive(true);
             return;
         }
 
         for (int i = 0; i < stages.Length; i++)
         {
             stagePaths.Add(stages[i]);
-            string trimmedName = stages[i].Replace(filePath, "");
-            stageNames.AddItem(stages[i]);
+            string[] trimmedName = stages[i].Split('/'); //TODO check for other OS
+            string stageNameJson = trimmedName[trimmedName.Length - 1];
+            string stageNameNoJson = stageNameJson.Substring(0, stageNameJson.Length - 5);
+            stageNames.AddItem(stageNameNoJson);
         }
     }
 
@@ -64,13 +74,14 @@ public class PlayTestController : MonoBehaviour
         }
 
         var fileContent = File.ReadAllText(stagePaths[selectedIndex]);
-       map =StageBuilder.Instance.LoadStageFromJsonInGame(fileContent.ToString());        
+       map =StageBuilder.Instance.LoadStageFromJsonInGame(fileContent.ToString());
 
-        player.transform.position = (map.PlayerSpawns != null || map.PlayerSpawns.Count == 0) ?
+
+        player.StartPosition = (map.PlayerSpawns != null || map.PlayerSpawns.Count == 0) ?
             Vector3.zero + Vector3.up * 3: map.PlayerSpawns[0].transform.position + (Vector3.up) ;
         map.RepositionToInGame();
 
-        player.gameObject.SetActive(true);
+        player.ResetPosition();        
     }
 
     public void BackToHome() {

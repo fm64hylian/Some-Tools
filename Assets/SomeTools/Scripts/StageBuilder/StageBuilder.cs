@@ -440,12 +440,11 @@ public class StageBuilder : MonoBehaviour
         Ray rayMainCamera = Camera.main.ScreenPointToRay(Input.mousePosition);
         int everythingbutUIMask = (1 >> LayerMask.NameToLayer("UI"));
 
-        Physics.Raycast(rayMainCamera, out hitInfo, 100f, everythingbutUIMask);
-        Debug.Log("pos "+Camera.main.ScreenToWorldPoint(Input.mousePosition) +" hit object "+hitInfo.transform);
+        bool isHit = Physics.Raycast(rayMainCamera, out hitInfo, 100f); //, everythingbutUIMask); TODO   
         return hitInfo;
 
         /*
-         *         Ray rayCastUI = UICamera.currentCamera.ScreenPointToRay(Input.mousePosition);
+         Ray rayCastUI = UICamera.currentCamera.ScreenPointToRay(Input.mousePosition);
          RaycastHit hitUI;
          int uiMask = (1 << LayerMask.NameToLayer("UI"));
          return Physics.Raycast(rayCastUI, out hitUI, 100f, uiMask);
@@ -509,11 +508,9 @@ public class StageBuilder : MonoBehaviour
         //tileSelector.GetComponentInChildren<MeshRenderer>().material = selectController.GetSelectShaders()[index];
     }
 
-
     void UpdateSelectedItemFromClick(StageObject newSelection)
     {
-        if (SelectedMouseObject != newSelection)
-        {
+        if (SelectedMouseObject != newSelection){
             menuController.UnselelectItem();
             SelectedMouseObject = newSelection;
         }
