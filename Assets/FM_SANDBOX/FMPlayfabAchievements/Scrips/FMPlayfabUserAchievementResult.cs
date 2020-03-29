@@ -23,7 +23,6 @@ public class FMPlayfabUserAchievementResult
     public FMPlayfabUserAchievementResult(ExecuteCloudScriptResult res)
     {
         //Debug.Log("user achv res: "+JSON.Parse(res.ToString()));
-        Debug.Log(PlayFabSimpleJson.SerializeObject(res.FunctionResult));
         if (res.FunctionResult == null) {
             return;
         }

@@ -1,6 +1,8 @@
 ﻿using PlayFab.ClientModels;
+using PlayFab.Json;
 using SimpleJSON;
 using System.Collections.Generic;
+using UnityEngine;
 
 public enum FMRewardStatus
 {
@@ -8,11 +10,10 @@ public enum FMRewardStatus
     error,
 }
 
-public class FMPlayfabRewardsResult
+public class FMPlayfabRewardsResult : MonoBehaviour // TODO remove mono
 {
     public FMRewardStatus status = FMRewardStatus.success;
     public List<FMRewardItem> ClaimedRewards = new List<FMRewardItem>();
-    ExecuteCloudScriptResult result;
     JSONNode jsonResult;
 
 
@@ -26,20 +27,29 @@ public class FMPlayfabRewardsResult
 
     public FMPlayfabRewardsResult(ExecuteCloudScriptResult res)
     {
-        result = res;
-        FilterResult();
+        FilterResult(res);
     }
 
-    public void FilterResult()
+    public void FilterResult(ExecuteCloudScriptResult result)
     {
-        ClaimedRewards.Clear();
+        ClaimedRewards.Clear();            
+        JSONNode jsonResultPF = PlayFabSimpleJson.SerializeObject(result.FunctionResult);        
         jsonResult = JSON.Parse(result.FunctionResult.ToString());
+
+        Debug.Log("json result playfab " + jsonResultPF.ToString());
+        Debug.Log("json result " + jsonResult.ToString());
         if ((jsonResult.Value.Equals("null") || result.Error != null))
         {
             status = FMRewardStatus.error;
             return;
         }
 
+        /*{ "status":"success",
+         * "rewards":
+         * [{"achievement_key":"stages_created","reward_Key":"default_co_200","reward_type":"coins","amount":200}]
+         * }
+         */
+        Debug.Log("function result  size" + jsonResult["rewards"].AsArray.Count);
         for (int i = 0; i < jsonResult["rewards"].AsArray.Count; i++)
         {
             string rewardKey = jsonResult["rewards"].AsArray[i]["reward_Key"];

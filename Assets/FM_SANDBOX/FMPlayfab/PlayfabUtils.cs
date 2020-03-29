@@ -102,9 +102,9 @@ public class PlayfabUtils : MonoBehaviour
     //}
 
     public void ClaimAchievementReward(JSONNode UAjson, Action<ExecuteCloudScriptResult> OnRewardsClaimed, Action<PlayFabError> OnError) {
-        Dictionary<string, string> args = new Dictionary<string, string>();
-        args.Add("unclaimed_achievements", UAjson.ToString());
-
+        //Dictionary<string, string> args = new Dictionary<string, string>();
+        //args.Add("unclaimed_achievements", UAjson.ToString());
+        object args = new { unclaimed_achievements = UAjson.ToString() };
         ExecuteCloudscript("ClaimAchievementReward",args, OnRewardsClaimed, OnError);
     }
 

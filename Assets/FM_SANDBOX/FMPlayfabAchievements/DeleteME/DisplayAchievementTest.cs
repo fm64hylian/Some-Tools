@@ -1,5 +1,6 @@
 ﻿using PlayFab;
 using PlayFab.ClientModels;
+using PlayFab.Json;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,14 +14,16 @@ public class DisplayAchievementTest : MonoBehaviour
 
     List<FMParticleSpawner> spawners = new List<FMParticleSpawner>();
 
+
     void Start()
     {
         spawners.Add(particleSpawner.GetComponentsInChildren<FMParticleSpawner>()[0]); //check
         spawners.Add(particleSpawner.GetComponentsInChildren<FMParticleSpawner>()[1]); //coin CO
-        spawners.Add(particleSpawner.GetComponentsInChildren<FMParticleSpawner>()[2]); //coin PC
+        spawners.Add(particleSpawner.GetComponentsInChildren<FMParticleSpawner>()[2]); //coin PC       
 
         if (!FMPlayfabLogin.IsClientLoggedIn())
         {
+            Debug.Log("client was not logged");
             FMPlayfabLogin.LoginCustomID("64646464", LoadPlayfabData);
         }
         LoadPlayfabData(null);
@@ -29,37 +32,39 @@ public class DisplayAchievementTest : MonoBehaviour
     void LoadPlayfabData(LoginResult logResult)
     {
         //getting user statistics
-        Debug.Log("on achievements, displaying statistics "+ ClientSessionData.Instance.Statistics.Count);
-        if (ClientSessionData.Instance.Statistics.Count == 0) { 
-        PlayfabUtils.Instance.GetPlayerStatistics(null, (res) =>
-        {
-            FMPlayfabUserStatistics.StoreItemsFromJson(res);
-        }, PlayFabError);
-        }
+        //if (ClientSessionData.Instance.Statistics.Count == 0)
+        //{
+        //    PlayfabUtils.Instance.GetPlayerStatistics(null, (res) =>
+        //    {
+        //        FMPlayfabUserStatistics.StoreItemsFromJson(res);
+        //    }, PlayFabError);
+        //}
 
         //getting user achievements if any
-        if (ClientSessionData.Instance.UserAchievements.Count == 0){
-            PlayfabUtils.Instance.GetUserReadOnlyData(new List<string> { "fm_user_achievements" },
-                result =>
+        //if (ClientSessionData.Instance.UserAchievements.Count == 0) {
+        PlayfabUtils.Instance.GetUserReadOnlyData(new List<string> { "fm_user_achievements" },
+            result =>
+            {
+                FMPlayfabUserAchievement.Instance.StoreItemsFromJson(result);
+                if (FMPlayfabUserAchievement.Items.Count != 0)
                 {
-                    FMPlayfabUserAchievement.Instance.StoreItemsFromJson(result);
-                    if (FMPlayfabUserAchievement.Items.Count != 0){
-                        ClientSessionData.Instance.UserAchievements = FMPlayfabUserAchievement.Items;
-                    }
+                    ClientSessionData.Instance.UserAchievements = FMPlayfabUserAchievement.Items;
+                }
 
                     //getting reward and achievement list
                     PlayfabUtils.Instance.GetTitleData(new List<string>() { "fm_achievements", "fm_rewards" }, (res) =>
-                    {
-                        FMPlayfabAchievements.Instance.StoreItemsFromJson(res);
-                        FMPlayfabReward.StoreItemsFromJson(res);
+                {
+                    FMPlayfabAchievements.Instance.StoreItemsFromJson(res);
+                    FMPlayfabReward.StoreItemsFromJson(res);
 
                         //define OnGetAchievement to know what to do with the acheivements
                         FMPlayfabAchievements.Instance.OnGetAchievement = DisplayAchievements;
-                        FMPlayfabUserAchievement.Instance.OnClaimReward = OnClaimedRewards;
-                        FMPlayfabAchievements.Instance.GetUserAchivements();
-                    }, PlayFabError);
+                    FMPlayfabUserAchievement.Instance.OnClaimReward = OnClaimedRewards;
+                    FMPlayfabAchievements.Instance.GetUserAchivements();
+                    return;
                 }, PlayFabError);
-        }
+            }, PlayFabError);
+        //} 
     }
 
     void PlayFabError(PlayFabError error)
@@ -75,8 +80,8 @@ public class DisplayAchievementTest : MonoBehaviour
             return;
         }
 
-        Debug.Log("display achievements "+ FMPlayfabAchievements.Items.Count);
-        Debug.Log("display user achievements "+FMPlayfabUserAchievement.Items.Count);
+        Debug.Log("display achievements " + FMPlayfabAchievements.Items.Count);
+        Debug.Log("display user achievements " + FMPlayfabUserAchievement.Items.Count);
         //adding elements in grid
         foreach (FMAchievementItem item in FMPlayfabAchievements.Items)
         {
@@ -85,7 +90,7 @@ public class DisplayAchievementTest : MonoBehaviour
 
             int currenIndex = FMPlayfabUserAchievement.Instance.GetUserAchievementFromKey(item.Key) != null ?
                 FMPlayfabUserAchievement.Instance.GetUserAchievementFromKey(item.Key).CurrenIndex : 0;
-            
+
             itemData.SetData(item, GetRewardIconName(item, currenIndex));
             itemData.Achievement = item;
 
@@ -102,8 +107,8 @@ public class DisplayAchievementTest : MonoBehaviour
             //Add to grid
             achievementPrefab.transform.parent = grid.transform;
             achievementPrefab.transform.localScale = Vector3.one;
-            grid.Reposition();
         }
+        grid.Reposition();
     }
 
     /// <summary>
@@ -114,15 +119,14 @@ public class DisplayAchievementTest : MonoBehaviour
     /// <returns></returns>
     string GetRewardIconName(FMAchievementItem achivement, int index)
     {
-
         FMRewardItem reward = FMPlayfabReward.GetRewardFromKey(achivement.RewardKeys[index]);
         //default
         if (index == -1 || reward == null)
         {
-            Debug.Log("reward null en "+ achivement.Key);
+            Debug.Log("reward null en " + achivement.Key);
             return "achievement";
         }
-        
+
         switch (reward.RewardTypeValue)
         {
             case "co":
@@ -158,8 +162,9 @@ public class DisplayAchievementTest : MonoBehaviour
         }
 
         //spawming particles to currencies
-        Debug.Log("reward type "+reward.RewardTypeValue);
-        switch (reward.RewardTypeValue) {
+        Debug.Log("reward type " + reward.RewardTypeValue);
+        switch (reward.RewardTypeValue)
+        {
             case "co":
                 spawners[1].SpawnParticles(UICamera.mainCamera.ScreenToWorldPoint(Input.mousePosition));
                 break;
@@ -180,6 +185,8 @@ public class DisplayAchievementTest : MonoBehaviour
     /// <param name="res"></param>
     void OnClaimedRewards(FMPlayfabRewardsResult res)
     {
+        Debug.Log("json result onclaimed "+ res.JsonResult.ToString());
+
         if (res.status != FMRewardStatus.success)
         {
             Debug.Log("bad result");
@@ -191,7 +198,7 @@ public class DisplayAchievementTest : MonoBehaviour
             Debug.Log("got " + res.ClaimedRewards[i].GetValue() + " " + res.ClaimedRewards[i].GetValue());
         }
     }
-    
+
     public void BackToHome()
     {
         SceneManager.LoadScene("Home");

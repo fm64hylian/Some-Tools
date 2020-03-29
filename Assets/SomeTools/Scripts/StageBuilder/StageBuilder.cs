@@ -477,7 +477,7 @@ public class StageBuilder : MonoBehaviour
     void InitializeTileSelector()
     {
         tileSelector.SetActive(false);
-        //tileSelector.GetComponentInChildren<MeshRenderer>().material = selectController.GetSelectShaders()[1];
+        tileSelector.GetComponent<MeshRenderer>().material = selectController.GetSelectShaders()[1]; //GetComponentInChildren
     }
 
     void ResetTileSelector()
@@ -504,8 +504,8 @@ public class StageBuilder : MonoBehaviour
 
     public void SetTileSelectorColor(bool isDraw)
     {
-        //int index = isDraw ? 1 : 2;
-        //tileSelector.GetComponentInChildren<MeshRenderer>().material = selectController.GetSelectShaders()[index];
+        int index = isDraw ? 1 : 2;
+        tileSelector.GetComponentInChildren<MeshRenderer>().material = selectController.GetSelectShaders()[index];
     }
 
     void UpdateSelectedItemFromClick(StageObject newSelection)

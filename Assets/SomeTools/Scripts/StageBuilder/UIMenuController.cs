@@ -22,13 +22,12 @@ public class UIMenuController : MonoBehaviour
     [SerializeField]
     GameObject clearConfirmationScreen;
     [SerializeField]
-    GameObject[] ItemButtons;
-    //[SerializeField]
-    //GameObject clearMenu;
+    GameObject[] ItemButtons;   
     StageBlock selectedBlock;
     StageObject selectedItem;
 
     //UIPopupList modeList;
+    UILabel tileNameLabel;
     UILabel posLabel;
     UILabel labpreviewBlock;
     //UIPopupList heiList; //TODO disable until figuring height out
@@ -42,7 +41,8 @@ public class UIMenuController : MonoBehaviour
         toggleModeButton = controlMenu.GetComponentsInChildren<ToggleButtonController>()[0];
         //toggleDecoButton = controlMenu.GetComponentsInChildren<ToggleButtonController>()[1];
         //modeList = controlMenu.GetComponentsInChildren<UIPopupList>()[1];
-        posLabel = tileMenu.GetComponentsInChildren<UILabel>()[0];
+        tileNameLabel = tileMenu.GetComponentsInChildren<UILabel>()[0];
+        posLabel = tileMenu.GetComponentsInChildren<UILabel>()[1];
         labpreviewBlock = PreviewMenu.GetComponentsInChildren<UILabel>()[0];
         tileMenu.SetActive(false);
         //heiList = tileMenu.GetComponentsInChildren<UIPopupList>()[0];
@@ -92,26 +92,16 @@ public class UIMenuController : MonoBehaviour
     }
 
     public void DisplayTileMenu(){
-        tileMenu.SetActive(true); //clearMenu
+        tileMenu.SetActive(true);
         //CheckIfBlockHasSlope();
     }
 
     public void HideTileMenu(){
-        tileMenu.SetActive(false);//clearMenu
+        tileMenu.SetActive(false);
         if ( selectedItem != null) {
             selectedItem.UnHightlight();
         }
     }
-
-    //public void DisplayClearConfirmationMenu()
-    //{
-    //    clearMenu.SetActive(true);
-    //}
-
-    //public void HideClearConfirmationMenu()
-    //{
-    //    clearMenu.SetActive(false);
-    //}
 
     public void DisplayClearGridMenu(){
         clearConfirmationScreen.SetActive(true);
@@ -158,7 +148,6 @@ public class UIMenuController : MonoBehaviour
     public void DisplayMainMenu(){
         gridSizeMenu.SetActive(false);
         controlMenu.SetActive(true);
-        Debug.Log("tile menu pos after" + tileMenu.transform.position);
     }
 
     void ToggleHelpMenu(){
@@ -169,6 +158,7 @@ public class UIMenuController : MonoBehaviour
         selectedItem = item;
         selectedItem.IsSelected = true;
         selectedItem.HighLight();
+        tileNameLabel.text = item.Model.JsonKey.Replace("_", "");
         DisplayPosition(item.GridPosition.Row, item.GridPosition.Col, item.GridPosition.Height);
         //SetHeightDataFromItem();
     }

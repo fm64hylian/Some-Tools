@@ -478,18 +478,18 @@ public class SelectionController : MonoBehaviour
     /// <param name="index"></param>
     public void SetSelectorColor(SelectorMode mode)
     {
-        //switch (mode)
-        //{
-        //    case SelectorMode.Default:
-        //        selectCubes[0].GetComponent<MeshRenderer>().material = selectBoxMaterials[0];
-        //        break;
-        //    case SelectorMode.MultiSelect:
-        //        selectCubes[0].GetComponent<MeshRenderer>().material = selectBoxMaterials[1];
-        //        break;
-        //    case SelectorMode.NotAllowed:
-        //        selectCubes[0].GetComponent<MeshRenderer>().material = selectBoxMaterials[2];
-        //        break;
-        //}
+        switch (mode)
+        {
+            case SelectorMode.Default:
+                selectCubes[0].GetComponent<MeshRenderer>().material = selectBoxMaterials[0];
+                break;
+            case SelectorMode.MultiSelect:
+                selectCubes[0].GetComponent<MeshRenderer>().material = selectBoxMaterials[1];
+                break;
+            case SelectorMode.NotAllowed:
+                selectCubes[0].GetComponent<MeshRenderer>().material = selectBoxMaterials[2];
+                break;
+        }
     }
 
     /// <summary>
