@@ -28,4 +28,8 @@ public class FMInventoryItem
     public bool IsItem() {
         return ItemClass.Equals("Item");
     }
+
+    public bool IsEquipment() {
+        return Tags.Contains("equipment");
+    }
 }

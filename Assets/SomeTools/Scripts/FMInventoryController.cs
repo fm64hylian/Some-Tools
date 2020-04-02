@@ -25,8 +25,9 @@ public class FMInventoryController : MonoBehaviour
     UILabel labDetailName;
     UISprite detailItemSPrite;
     UILabel labDetailDescription;
+    UILabel labDetailAmount;
     UILabel labDetailEffect;
-    UILabel labDetailSellPrice;
+    UILabel labDetailSellPrice;    
     UIToggle checkFavorite;
     UIToggle checkEquipped;
 
@@ -45,8 +46,9 @@ public class FMInventoryController : MonoBehaviour
         labDetailName = detailPanel.GetComponentsInChildren<UILabel>()[1];
         detailItemSPrite = detailPanel.GetComponentsInChildren<UISprite>()[8];
         labDetailDescription = detailPanel.GetComponentsInChildren<UILabel>()[2];
-        labDetailEffect = detailPanel.GetComponentsInChildren<UILabel>()[4]; 
-        labDetailSellPrice = detailPanel.GetComponentsInChildren<UILabel>()[6];
+        labDetailAmount = detailPanel.GetComponentsInChildren<UILabel>()[3];
+        labDetailEffect = detailPanel.GetComponentsInChildren<UILabel>()[5]; 
+        labDetailSellPrice = detailPanel.GetComponentsInChildren<UILabel>()[7];
         checkFavorite = detailPanel.GetComponentsInChildren<UIToggle>()[0];
         checkEquipped = detailPanel.GetComponentsInChildren<UIToggle>()[1];
         HideDetailScreen();
@@ -86,6 +88,7 @@ public class FMInventoryController : MonoBehaviour
         labDetailName.text = item.Item.DisplayName;
         detailItemSPrite.spriteName = item.Item.SpriteName;
         labDetailDescription.text = item.Item.Description;
+        labDetailAmount.text = "x "+ item.Item.Amount;
 
         if (item.Item.Effects.Count > 0) {
             foreach (KeyValuePair<string, string> kvp in item.Item.Effects) {
@@ -119,11 +122,6 @@ public class FMInventoryController : MonoBehaviour
         DisplayDetailScreen();
     }
 
-    void Update()
-    {
-        
-    }
-
     public void HideDetailScreen() {
         if (selectedItem != null) {
             selectedItem.Unselect();
@@ -146,10 +144,9 @@ public class FMInventoryController : MonoBehaviour
     void OnSoldItems(ExecuteCloudScriptResult result) {
 
         //for some weird reason, result is not retutning so we put the result in a log, wth
-        Debug.Log(PlayFabSimpleJson.SerializeObject(result));
-        Debug.Log(result.ToString());
+        Debug.Log("result "+PlayFabSimpleJson.SerializeObject(result));
         //JSONNode json = JSON.Parse(result.FunctionResult.ToString());
-        //JSONNode json = PlayFabSimpleJson.SerializeObject(result.FunctionResult);
+        JSONNode json = PlayFabSimpleJson.SerializeObject(result.FunctionResult);
 
         //if (json == null || json["status"].Equals("error")) {
         //    string msg = json["message"] != null ? json["message"].Value : "";
@@ -174,19 +171,19 @@ public class FMInventoryController : MonoBehaviour
 
         //remove item if amount is 0
         selectedItem.Item.Amount -= 1;
+        labDetailAmount.text = "x " + selectedItem.Item.Amount;
+
         if (selectedItem.Item.Amount <= 0) {
             string itemID = selectedItem.Item.InstanceID;
             ClientSessionData.Instance.InventoryItems.Remove(selectedItem.Item);
 
-            //remove from grid
-            Transform gridItem = grid.GetChildList().Find(x => x.GetComponent<FMInventoryItemUI>().Item.Equals(itemID));
+            //remove from grid            
+            Transform gridItem = grid.GetChildList().Find(x => x.gameObject.GetComponent<FMInventoryItemUI>().Item.InstanceID.Equals(itemID));
             if (gridItem != null) {
-                Destroy(gridItem);
-                //grid.RemoveChild(gridItem)
+                Destroy(gridItem.gameObject);
             }
             grid.Reposition();
             HideDetailScreen();
-            Debug.Log("removing from grid");
         }
     }
 
@@ -227,10 +224,10 @@ public class FMInventoryController : MonoBehaviour
                 grid.onCustomSort = SortByName;
                 break;
             case "ID":
-                grid.onCustomSort = SortByName;
+                grid.onCustomSort = SortByID;
                 break;
             case "Type":
-                grid.onCustomSort = SortByName;
+                grid.onCustomSort = SortByType;
                 break;                
         }
         grid.Reposition();
@@ -259,6 +256,29 @@ public class FMInventoryController : MonoBehaviour
 
     public void BackToHome()
     {
+        JSONArray json = new JSONArray();
+        //send to server favorites and eqquiped items
+        for (int i = 0; i < grid.GetComponentsInChildren<Transform>(true).Length; i++)
+        {
+            FMInventoryItemUI item = grid.GetComponentsInChildren<Transform>(true)[i].GetComponent<FMInventoryItemUI>();
+            if (item != null) {                
+                item.Item.IsFavorite = item.isFavorite;
+
+                json[i]["item"] = item.Item.InstanceID;
+                json[i]["is_favorite"] = item.isFavorite;
+                if (item.Item.IsEquipment())
+                {
+                    json[i]["is_equipped"] = item.Item.IsEquipped;
+                }
+                //saving on client
+                FMInventoryItem savedItem = ClientSessionData.Instance.InventoryItems.Find(x => x.InstanceID.Equals(item.Item.InstanceID));
+                if (savedItem != null) {
+                    savedItem = item.Item;
+                }
+            }
+        }
+        Debug.Log("el json "+ json.ToString());
+
         SceneManager.LoadScene("Home");
     }
 }

@@ -142,7 +142,7 @@ public class FMStoreController : MonoBehaviour
         labPC.text = ClientSessionData.Instance.currencyPC.ToString();
         
         //add to inventory
-        FMInventoryItem inviItem = ClientSessionData.Instance.InventoryItems.Find(x => x.CatalogID.Equals(res.Items[0].ItemInstanceId));        
+        FMInventoryItem inviItem = ClientSessionData.Instance.InventoryItems.Find(x => x.CatalogID.Equals(res.Items[0].ItemId));
 
         //if there is already an instance id, we just add 1
         if (inviItem != null && inviItem.IsStackable) {
