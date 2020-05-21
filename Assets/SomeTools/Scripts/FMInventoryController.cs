@@ -21,7 +21,7 @@ public class FMInventoryController : MonoBehaviour
     UILabel labCO;
     UILabel labPC;
 
-    //detail anel UI
+    //detail panel UI
     UILabel labDetailName;
     UISprite detailItemSPrite;
     UILabel labDetailDescription;
@@ -256,28 +256,43 @@ public class FMInventoryController : MonoBehaviour
 
     public void BackToHome()
     {
+        List<FMInventoryItem> clientItems = ClientSessionData.Instance.InventoryItems;
         JSONArray json = new JSONArray();
         //send to server favorites and eqquiped items
-        for (int i = 0; i < grid.GetComponentsInChildren<Transform>(true).Length; i++)
-        {
+        for (int i = 0; i < grid.GetComponentsInChildren<Transform>(true).Length; i++){
             FMInventoryItemUI item = grid.GetComponentsInChildren<Transform>(true)[i].GetComponent<FMInventoryItemUI>();
             if (item != null) {                
                 item.Item.IsFavorite = item.isFavorite;
-
-                json[i]["item"] = item.Item.InstanceID;
-                json[i]["is_favorite"] = item.isFavorite;
+                JSONNode node = JSON.Parse("{}");
+                node.Add("item", item.Item.InstanceID);
+                node.Add("is_favorite", item.isFavorite);         
+                //json[i]["item"] = item.Item.InstanceID;
+                //json[i]["is_favorite"] = item.isFavorite;
                 if (item.Item.IsEquipment())
                 {
-                    json[i]["is_equipped"] = item.Item.IsEquipped;
+                    node.Add("is_equipped", item.Item.IsEquipped);
+                    //json[i]["is_equipped"] = item.Item.IsEquipped;
                 }
                 //saving on client
                 FMInventoryItem savedItem = ClientSessionData.Instance.InventoryItems.Find(x => x.InstanceID.Equals(item.Item.InstanceID));
                 if (savedItem != null) {
                     savedItem = item.Item;
                 }
+                json[i] = node;
             }
         }
+
+        //if there was no changes, just go back
+        if (clientItems == ClientSessionData.Instance.InventoryItems) {
+            SceneManager.LoadScene("Home");
+            Debug.Log("no changes");
+            return;
+        }
+
         Debug.Log("el json "+ json.ToString());
+        //calling playfab
+        PlayfabUtils.Instance.UpdateInventoryEquip(json, 
+            result => { Debug.Log("updated successfully"); }, error => { Debug.Log("error on update"); });
 
         SceneManager.LoadScene("Home");
     }

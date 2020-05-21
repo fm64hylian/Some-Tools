@@ -97,6 +97,11 @@ public class PlayfabUtils : MonoBehaviour
         ExecuteCloudscript("CheckUserAchievements", null, onCallback, OnError);
     }
 
+    public void UpdateInventoryEquip(JSONArray jsonCustom, Action<ExecuteCloudScriptResult> onCallback, Action<PlayFabError> OnError) {
+        object args = new { inventoryUpdate = jsonCustom };
+        ExecuteCloudscript("UpdateInventoryEquip", args, onCallback, OnError);
+    }
+
     //public void CheckOldUserStatistics(Action<ExecuteCloudScriptResult> onCallBack, Action<PlayFabError> OnError) {
     //    ExecuteCloudscript("CheckOldUserStatistics", null, onCallBack, OnError);
     //}

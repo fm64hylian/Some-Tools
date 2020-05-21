@@ -154,7 +154,7 @@ public class HomeController : MonoBehaviour
     }
 
     public void GoToStageBuilder() {
-        SceneManager.LoadScene("StageBuider");
+        SceneManager.LoadScene("StageBuilder");
     }
 
     public void GoToPlayTest() {

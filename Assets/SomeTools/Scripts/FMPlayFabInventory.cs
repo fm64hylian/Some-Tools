@@ -43,13 +43,17 @@ public class FMPlayFabInventory : MonoBehaviour
         }
 
         //custom item instance data
-        if (iItem.CustomData != null && iItem.CustomData.ContainsKey("is_favorite"))
+        string isFavKey = "false";
+        string isEquipKey = "false";
+        if (iItem.CustomData != null && iItem.CustomData.TryGetValue("is_favorite", out isFavKey)) //iItem.CustomData.ContainsKey("is_favorite")
         {
-            invItem.IsFavorite = bool.Parse(iItem.CustomData["is_favorite"]);
+            invItem.IsFavorite = bool.Parse(isFavKey); //iItem.CustomData["is_favorite"]
+            //Debug.Log(invItem.DisplayName+" has is favorite, "+ invItem.IsFavorite);
         }
-        if (iItem.CustomData != null && iItem.CustomData.ContainsKey("is_equipped"))
+        if (iItem.CustomData != null && iItem.CustomData.TryGetValue("is_equipped", out isEquipKey))
         {
-            invItem.IsEquipped = bool.Parse(iItem.CustomData["is_equipped"]);
+            invItem.IsEquipped = bool.Parse(isEquipKey);
+            //Debug.Log(invItem.DisplayName + " has is equipped, " + invItem.IsEquipped);
         }
         return invItem;
     }

@@ -24,7 +24,6 @@ public class FMInventoryItemUI : MonoBehaviour
     void Start()
     {
         equipedIcon.SetActive(false);
-        checkFavorite.value = false;
     }
 
     public void SetData(FMInventoryItem iitem){
@@ -35,6 +34,7 @@ public class FMInventoryItemUI : MonoBehaviour
         }
 
         labAmount.text = iitem.IsStackable ? "x "+ iitem.Amount.ToString() : "";
+        checkFavorite.value = iitem.IsFavorite;
 
         //if equipment, show E
         equipedIcon.SetActive(!iitem.IsItem() && iitem.IsEquipped);

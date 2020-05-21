@@ -13,7 +13,7 @@ public class IntroLoader : MonoBehaviour
     [SerializeField]
     UILabel labLoading;
     float progress =0f;
-    float total = 0.2f;
+    float total = 0.0f;
     bool loadComplete = false;    
 
     void Start()
@@ -41,7 +41,7 @@ public class IntroLoader : MonoBehaviour
             ClientSessionData.Instance.PlayfabID = logResult.PlayFabId;
             ClientSessionData.Instance.UserName = result.AccountInfo.TitleInfo.DisplayName;
             labLoading.text = "... Loading user info ...";
-            progress += 0.2f;
+            progress += 0.20f;
             total += progress;
 
             //get currency
@@ -58,7 +58,7 @@ public class IntroLoader : MonoBehaviour
                 //inventory
                 inventoryItems = resInventory.Inventory;
                 labLoading.text = "... Loading Inventory ...";
-                progress += 0.2f;
+                progress += 0.20f;
                 //total += progress;
 
                 //statistics
@@ -67,7 +67,7 @@ public class IntroLoader : MonoBehaviour
                     FMPlayfabUserStatistics.StoreItemsFromJson(statRes);
                     ClientSessionData.Instance.Statistics = FMPlayfabUserStatistics.Items;
                     labLoading.text = "... Loading User Statistics ...";
-                    progress += 0.2f;
+                    progress += 0.20f;
                     total += progress;
 
                     //get title Data
@@ -80,7 +80,7 @@ public class IntroLoader : MonoBehaviour
                         ClientSessionData.Instance.Rewads = FMPlayfabReward.Items;
 
                         labLoading.text = "... Loading Title Data ...";
-                        progress += 0.1f;
+                        progress += 0.20f;
                         total += progress;
 
                         //get catalogItems
@@ -94,7 +94,7 @@ public class IntroLoader : MonoBehaviour
 
                             //TODO cross catalog and instance items;
                             labLoading.text = "... Loading Catalog Items ...";
-                            progress += 0.1f;
+                            progress += 0.20f;
                             total += progress;
                         }
                         , error => { Debug.Log("error on get catalog info"); });
@@ -124,7 +124,7 @@ public class IntroLoader : MonoBehaviour
             GoToHome();            
             return;
         }
-        progressBar.value = Mathf.Lerp(progress, total, Time.deltaTime);
+        progressBar.value =  progress;//Mathf.Lerp(progress, total, Time.deltaTime);
     }   
 
     void GoToHome() {
