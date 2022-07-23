@@ -14,11 +14,46 @@ public class FMPlayfabLogin : MonoBehaviour
     public static void LoginCustomID(string titleID, string customId, Action<LoginResult> OnLoginSuccess, Action<PlayFabError> OnLoginFailure) {
         //IVPlayfabLogin.LoginCustomID(PlayFabSettings.TitleId, "64646464", LoginSuccess, PlayFabError);
         var request = new LoginWithCustomIDRequest {
+            TitleId = titleID,
             CustomId = customId,
             CreateAccount = false
         };
         PlayFabClientAPI.LoginWithCustomID(request, OnLoginSuccess, OnLoginFailure);
+
     }
+
+
+    public static void LoginMail(string mail, string pass,  Action<LoginResult> OnLoginSuccess)
+    {
+        LoginMail(PlayFabSettings.TitleId, mail,pass, OnLoginSuccess, OnLoginFailure);
+    }
+
+    public static void LoginMail(string titleID, string mail, string pass, Action<LoginResult> OnLoginSuccess, Action<PlayFabError> OnLoginFailure) {
+        var request = new LoginWithEmailAddressRequest
+        {
+            TitleId = titleID,
+            Email = mail,
+            Password = pass
+        };
+        PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnLoginFailure);
+    }
+
+    public static void LoginPlayfabUSer(string user, string pass, Action<LoginResult> OnLoginSuccess)
+    {
+        LoginPlayfabUSer(PlayFabSettings.TitleId, user, pass, OnLoginSuccess, OnLoginFailure);
+    }
+
+    public static void LoginPlayfabUSer(string titleID, string user, string pass, Action<LoginResult> OnLoginSuccess, Action<PlayFabError> OnLoginFailure)
+    {
+        var request = new LoginWithPlayFabRequest
+        {
+            TitleId = titleID,
+            Username = user,
+            Password = pass
+        };
+
+        PlayFabClientAPI.LoginWithPlayFab(request, OnLoginSuccess, OnLoginFailure);
+    }    
 
     public static bool IsClientLoggedIn() {
         return PlayFabClientAPI.IsClientLoggedIn();
@@ -27,6 +62,15 @@ public class FMPlayfabLogin : MonoBehaviour
     static void OnLoginFailure(PlayFabError error) {
         Debug.Log("could not login, "+error.ErrorMessage);
     }
+
+    //TODO register
+	/*        RegisterPlayFabUserRequest registerRequest = new RegisterPlayFabUserRequest() {
+            Username = userInputR.text,
+            Email = mailInputR.text,
+            Password = passInputR.text
+        };
+
+        PlayFabClientAPI.RegisterPlayFabUser(registerRequest,OnUSerRegistered, OnRegisterError);*/    
 
     //check later
     /*

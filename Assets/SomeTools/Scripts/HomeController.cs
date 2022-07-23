@@ -12,6 +12,8 @@ public class HomeController : MonoBehaviour
     [SerializeField]
     UILabel labUser;
     [SerializeField]
+    GameObject FmDialog;
+    [SerializeField]
     UILabel labCurrencyCO;
     [SerializeField]
     UILabel labCurrencyPC;

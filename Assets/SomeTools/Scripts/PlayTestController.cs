@@ -9,7 +9,7 @@ public class PlayTestController : MonoBehaviour
     [SerializeField]
     UIPopupList stageNames;
     [SerializeField]
-    PlayerController player;
+    FMPlayerController player;
     [SerializeField]
     GameObject noStagesWarning;
     [SerializeField]

@@ -92,7 +92,36 @@ public class IntroLoader : MonoBehaviour
                             FMPlayFabInventory.StoreItemsFromPlayfab(catalogRes.Catalog, inventoryItems);
                             ClientSessionData.Instance.InventoryItems = FMPlayFabInventory.Items;
 
-                            //TODO cross catalog and instance items;
+                            //get user equipped items (from ReadOnlyData)
+                            PlayfabUtils.Instance.GetUserReadOnlyData(new List<string>() { "si_user_equipment" },
+                                useDataRes => {
+                            //if created ,assign to client
+                            if (useDataRes.Data.ContainsKey("si_user_equipment"))
+                                    {
+                                        Debug.Log("SI read only data");
+                                        FMPlayFabInventory.StoreSlotsFromJson(useDataRes);
+                                        SceneManager.LoadScene("Store", LoadSceneMode.Single);
+                                    }
+                            //if not created, assign for the first time
+                            else
+                                    {
+                                        Debug.Log("no equippment found, creating");
+                                        FMPlayFabInventory.CreateUserEquipment(slotRes => {
+
+                                            FMPlayFabInventory.StoreSlotsFromJson(slotRes);
+
+                                            Debug.Log("getting Equip slots for first time" + ClientSessionData.Instance.Slots.Count);
+                                            SceneManager.LoadScene("Store", LoadSceneMode.Single);
+
+                                        }, error => {
+                                            Debug.Log("error on get userEquipment");
+                                    //end get userEquipment
+                                });
+                                    }
+
+                                }, useDataError => { Debug.Log("error on get userEquipment using getUserdata"); });
+                            //end get userEquipment with GetUserData
+
                             labLoading.text = "... Loading Catalog Items ...";
                             progress += 0.20f;
                             total += progress;

@@ -14,6 +14,7 @@ public class ClientSessionData : MonoBehaviour
     public List<FMRewardItem> Rewads = new List<FMRewardItem>();
     public List<CatalogItem> CatalogItems = new List<CatalogItem>();
     public List<FMInventoryItem> InventoryItems = new List<FMInventoryItem>();
+    public List<FMInventorySlot> Slots = new List<FMInventorySlot>();
 
     public int currencyCO;
     public int currencyPC;

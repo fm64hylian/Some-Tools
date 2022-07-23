@@ -84,7 +84,7 @@ public class FMInventoryController : MonoBehaviour
 
     void DisplaySelectedItemInfo(FMInventoryItemUI item) {
 
-        checkEquipped.gameObject.SetActive(false);
+        checkEquipped.gameObject.SetActive(item.Item.IsEquipment());
         labDetailName.text = item.Item.DisplayName;
         detailItemSPrite.spriteName = item.Item.SpriteName;
         labDetailDescription.text = item.Item.Description;
