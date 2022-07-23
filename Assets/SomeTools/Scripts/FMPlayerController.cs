@@ -10,10 +10,13 @@ public class FMPlayerController : MonoBehaviour
     float speed = 6f;
     float maxVelocity = 4f;
     Vector3 inputVector;
-    bool isJumping;
+    float jumpForce = 0.6f;
+    //bool isJumping;
+    Collider playerCollider;
     void Start()
     {
-        isJumping = false;
+        //isJumping = false;
+        playerCollider = GetComponent<BoxCollider>();
         rb = GetComponent<Rigidbody>();
     }
 
@@ -26,9 +29,9 @@ public class FMPlayerController : MonoBehaviour
         rb.velocity = inputVector * speed;
 
         //jump
-        if (Input.GetKey(KeyCode.Z) && !isJumping) {            
-            rb.AddForce(Vector3.up * 20f, ForceMode.VelocityChange);
-            rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxVelocity);
+        if (Input.GetKey(KeyCode.Z)){// && isJumping) {            
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
+            //rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxVelocity);
             //isJumping = true;
         }
 
@@ -43,10 +46,17 @@ public class FMPlayerController : MonoBehaviour
         //rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxVelocity);
     }
 
+    bool isGround()
+    {
+        //TODO NOT working for whatever reason
+        return Physics.Raycast(transform.position, Vector3.down, 0.6f, LayerMask.GetMask("ground"));
+        //return Physics.Raycast(transform.position, Vector3.down, 0.6f, groundLayer);
+    }
+
     public void ResetPosition() {
         rb.velocity = Vector3.zero;
         transform.position = StartPosition;
-        isJumping = false;
+        //isJumping = false;
 
         gameObject.SetActive(true);
     }
