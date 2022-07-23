@@ -1,0 +1,31 @@
+fileFormatVersion: 2
+guid: 939f94ae9ef912445b8a397eda8d2868
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 94073015eacc34c1d8fc6786e43d60ca, type: 3}
+  baseLanguageID: en-US
+  stringIDs:
+  - fmDialog-Intro-0
+  - fmDialog-Intro-1
+  - fmDialog-Intro-2
+  - fmDialog-Intro-3
+  - fmDialog-Intro-4
+  - fmDialog-Intro-5
+  - fmDialog-Intro-6
+  - fmDialog-Intro-7
+  - fmDialog-Intro-8
+  - fmDialog-Intro-9
+  - fmDialog-Intro-10
+  - line:60c282
+  - line:d7df49
+  compilationStatus: 1
+  isSuccesfullyCompiled: 1
+  compilationErrorMessage: 
+  baseLanguage: {fileID: 7128917941130120860, guid: 939f94ae9ef912445b8a397eda8d2868,
+    type: 3}
+  localizations: []

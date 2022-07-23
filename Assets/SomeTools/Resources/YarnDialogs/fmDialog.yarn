@@ -1,0 +1,100 @@
+title: Intro
+
+position: 5,-200
+---
+//each node starts with 3 - and ends with =
+//we can't comment outside these
+
+//this is how variables are declared (string, number and bool)
+//can use variable expressions, but different tipes won't work <<set $broken = "hello" + 1>>
+//use {} to display value eg. {$var}
+<<if visited("Intro") is false>>
+	Deg: Welcome to FM Tools! #line:0161484
+	Deg: This project shows various features, like Store and Inventory system, Playfab connectivity, and more!  #line:00e0c4d
+	Deg: If this is your first time here, Would you like to hear the Explanation? #line:05c0990
+<<else>>
+	Deg: Would you like to hear the Explanation?
+<<endif>>
+//the arrow means "option", used to fork dialogs, nestable
+-> Yes, Please! #line:01c1351
+    [[Intro_Options]]
+
+-> I'm good. #line:00776dd
+	<<if visited("Intro") is false>>
+	Deg: Great, I'll be around in case you need help. #line:0390631
+	Deg: Have fun finding out what else is there! #line:0bda856
+	<<else>>
+	Deg: Ok, see you around.
+	<<endif>>
+===
+
+title: Intro_Options
+---
+Deg: What would you like to hear about? #line:06d03bd
+-> Tell me about Online feature #line:05c858a
+	[[Online_main]]
+-> Tell me about the Stage creator #line:056c37b
+	[[Stage_main]]
+-> I'll figure it out myself #line:0b2be61
+	Deg: Great, I'll be around in case you need help.
+	Deg: Have fun finding out what else is there!
+===
+
+title: Online_main
+position: -125,-102
+---
+//this is another node, you can create as much nodes as you want
+Deg: This project uses Playfab for its online features. #line:0950b9b
+Deg: Playfab is a powerful Backend tool that allows to manage Players, Leaderboards, in-game currencies, custom functions and such. #line:0cbf65a
+Deg: You can see there's a Login bonus there, we can register and manager user's Items and other information. #line:0b01498
+Deg: in fact, you are logged in right now! the project logs you in when you start and loads all the necessary data. #line:08b2eb9
+deg: (this is of course a bad practice and for test purposes only, please don't do in you real game) #line:0c32b2c
+Deg: when you login to your game, you can give the user an item or money with a custom Cloudscript method. #line:0a37753
+Deg: Cloudscript is the programing language used by Playfab, you can call a method from Unity and BOOM, Playfab executes it for you. #line:0275a77
+Deg: it's very convenient and safe when you are dealing with sensitive stuff like real world money transactions! #line:0956dc1
+Deg: No, we are not sponsored by Playfab or anything, I just think it's neat. #line:087c569
+[[Intro_Options]]
+===
+
+title: Stage_main
+position: 160,-104
+---
+//escape with markup or backslash
+Deg: Well, you know those games like -GENERIC CUBE SANDBOX- or -TOP DOWN 2D CATCH CREATURES- where the world is grid-like? #line:099cb7a
+Deg: we have made an  A T T E M P T  of a 3D grid-like stage builder. #line:0a413f4
+Deg: It's still a little rusty, but you can try it out and even test it with our friend, Cubito! #line:057ce99
+Bito: It's Bito, Ku is my last name #line:0e882c4
+Deg: It's fine, we are not even real #line:060f812
+Bito: Let's not think about it that much... #line:045251b
+Deg: it's probably for the best... #line:0571ef2
+[[Intro_Options]]
+===
+
+title: Store_main
+position: 160,-104
+---
+<<set $money to 10>>
+<<set $price to 5>>
+//buy sell etc
+<<if $money < $price>>
+    Deg: You can't afford that, sad. #line:0ef1576
+<<else>>
+//elseif also exist
+    Deg: Thanks! #line:00b1b97
+<<endif>>
+
+//you can also add conditions to display options etc
+//eg -> this option will be up if.. <<if $something > 10>>
+
+//about markups
+// its in format [a][/a], you can name them
+//eg: [wave][bounce]Hello![/wave][/bounce]
+// [/] to close all markups
+// they can have properties
+// [wave=2]Wavy![/wave]
+//property types: Integers, Floats, bool, Strings
+//whitespace is ignored on [/], to override:
+//A [wave trimwhitespace=false/] B
+//that will produce "A  B" anf not "A B"
+//[nomarkup] tag will escape everything inbetween
+===
