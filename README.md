@@ -1,3 +1,6 @@
+02/01/23 -- DEPRECATED, please refer to [this repository](https://github.com/fm64hylian/FM_tools) for the latest version
+
+
 # Some-Tools
 Several UI, playfab tools and more.
 
