@@ -7,8 +7,9 @@ public class FMPlayerController : MonoBehaviour
     public Vector3 StartPosition;
     public FMInventorySlot[] Slots;
     Rigidbody rb;
-    float speed = 6f;
-    float maxVelocity = 4f;
+    public float speed = 10f;
+    public float maxVelocity = 20f;
+
     Vector3 inputVector;
     float jumpForce = 0.6f;
     //bool isJumping;
@@ -23,17 +24,17 @@ public class FMPlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        inputVector = new Vector3(Input.GetAxis("Horizontal")* speed,
-            rb.velocity.y, Input.GetAxis("Vertical")* speed);
-        transform.LookAt(transform.position + new Vector3(inputVector.x, 0 , inputVector.z));
-        rb.velocity = inputVector * speed;
+        //inputVector = new Vector3(Input.GetAxis("Horizontal")* speed,
+        //    rb.velocity.y, Input.GetAxis("Vertical")* speed);
+        //transform.LookAt(transform.position + new Vector3(inputVector.x, 0 , inputVector.z));
+        //rb.velocity = inputVector * speed;
 
-        //jump
-        if (Input.GetKey(KeyCode.Z)){// && isJumping) {            
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
-            //rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxVelocity);
-            //isJumping = true;
-        }
+        ////jump
+        //if (Input.GetKey(KeyCode.Z)){// && isJumping) {            
+        //    rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
+        //    //rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxVelocity);
+        //    //isJumping = true;
+        //}
 
         //if player falls
         if (transform.position.y < -3f) {
@@ -42,7 +43,7 @@ public class FMPlayerController : MonoBehaviour
     }
 
     private void FixedUpdate(){
-        rb.velocity = inputVector;
+        //rb.velocity = inputVector;
         //rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxVelocity);
     }
 

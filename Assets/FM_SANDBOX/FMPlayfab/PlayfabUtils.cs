@@ -97,6 +97,25 @@ public class PlayfabUtils : MonoBehaviour
         ExecuteCloudscript("CheckUserAchievements", null, onCallback, OnError);
     }
 
+    /// <summary>
+    /// used to add custom data (is_equiped, etc) to equipment
+    /// </summary>
+    /// <param name="InventoryItemId"></param>
+    /// <param name="equip"></param>
+    /// <param name="onCallback"></param>
+    /// <param name="OnError"></param>
+    public void InitializePurchasedItem(string InventoryItemId, bool equip, Action<ExecuteCloudScriptResult> onCallback, Action<PlayFabError> OnError)
+    {
+        object args = new { ItemInstanceId = InventoryItemId, IsEquipped = equip };
+        ExecuteCloudscript("InitializePurchasedItem", args, onCallback, OnError);
+    }
+
+    /// <summary>
+    /// no se está usando??
+    /// </summary>
+    /// <param name="jsonCustom"></param>
+    /// <param name="onCallback"></param>
+    /// <param name="OnError"></param>
     public void UpdateInventoryEquip(JSONArray jsonCustom, Action<ExecuteCloudScriptResult> onCallback, Action<PlayFabError> OnError) {
         object args = new { inventoryUpdate = jsonCustom };
         ExecuteCloudscript("UpdateInventoryEquip", args, onCallback, OnError);

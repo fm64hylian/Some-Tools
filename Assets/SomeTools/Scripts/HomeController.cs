@@ -79,9 +79,9 @@ public class HomeController : MonoBehaviour
             FMPlayfabReward.StoreItemsFromJson(titleRes);
 
             ClientSessionData.Instance.Achievements = FMPlayfabAchievements.Items;
-            ClientSessionData.Instance.Rewads = FMPlayfabReward.Items;
+            ClientSessionData.Instance.Rewards = FMPlayfabReward.Items;
             Debug.Log("got achievments " + ClientSessionData.Instance.Achievements.Count);
-            Debug.Log("got rewards " + ClientSessionData.Instance.Rewads.Count);
+            Debug.Log("got rewards " + ClientSessionData.Instance.Rewards.Count);
 
             //LOGIN BONUS            
             FMPlayfabLoginBonus.Instance.CheckLoginBonus();

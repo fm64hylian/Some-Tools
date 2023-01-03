@@ -11,7 +11,7 @@ public class ClientSessionData : MonoBehaviour
     public List<FMUserStatistic> Statistics = new List<FMUserStatistic>();
     public List<FMAchievementItem> Achievements = new List<FMAchievementItem>();
     public List<FMUserAchievement> UserAchievements = new List<FMUserAchievement>();
-    public List<FMRewardItem> Rewads = new List<FMRewardItem>();
+    public List<FMRewardItem> Rewards = new List<FMRewardItem>();
     public List<CatalogItem> CatalogItems = new List<CatalogItem>();
     public List<FMInventoryItem> InventoryItems = new List<FMInventoryItem>();
     public List<FMInventorySlot> Slots = new List<FMInventorySlot>();

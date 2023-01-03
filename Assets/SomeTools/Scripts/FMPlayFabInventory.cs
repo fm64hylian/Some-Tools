@@ -23,7 +23,12 @@ public class FMPlayFabInventory : MonoBehaviour
         }
     }
 
-    static FMInventoryItem CreateInventoryItem(CatalogItem cItem, ItemInstance iItem) {
+    public static FMInventoryItem CreateInventoryItem(CatalogItem cItem, ItemInstance iItem)
+    {
+        return CreateInventoryItem(cItem, iItem, null);
+    }
+
+    static FMInventoryItem CreateInventoryItem(CatalogItem cItem, ItemInstance iItem, JSONNode equippedCustom) {
         FMInventoryItem invItem = new FMInventoryItem();
         invItem.DisplayName = cItem.DisplayName;
         invItem.CatalogID = cItem.ItemId;
@@ -36,6 +41,11 @@ public class FMPlayFabInventory : MonoBehaviour
         invItem.Prices = cItem.VirtualCurrencyPrices;
         invItem.IsStackable = cItem.IsStackable;
 
+        if (invItem.IsEquipment())
+        {
+            invItem.AssignEquipmentSlotType();
+        }
+
         if (!string.IsNullOrEmpty(cItem.CustomData))
         {
             //Debug.Log("item custom json " + cItem.CustomData);
@@ -46,22 +56,50 @@ public class FMPlayFabInventory : MonoBehaviour
         }
 
         //custom item instance data
+        //string isFavKey = "false";
+        //string isEquipKey = "false";
+        //if (iItem.CustomData != null && iItem.CustomData.TryGetValue("is_favorite", out isFavKey)) //iItem.CustomData.ContainsKey("is_favorite")
+        //{
+        //    invItem.IsFavorite = bool.Parse(isFavKey); //iItem.CustomData["is_favorite"]
+        //    //Debug.Log(invItem.DisplayName+" has is favorite, "+ invItem.IsFavorite);
+        //}
+        //if (iItem.CustomData != null && iItem.CustomData.TryGetValue("is_equipped", out isEquipKey))
+        //{
+        //    invItem.IsEquipped = bool.Parse(isEquipKey);
+        //    //Debug.Log(invItem.DisplayName + " has is equipped, " + invItem.IsEquipped);
+        //}
+
+        //custom item instance data
         string isFavKey = "false";
         string isEquipKey = "false";
         if (iItem.CustomData != null && iItem.CustomData.TryGetValue("is_favorite", out isFavKey)) //iItem.CustomData.ContainsKey("is_favorite")
         {
             invItem.IsFavorite = bool.Parse(isFavKey); //iItem.CustomData["is_favorite"]
-            //Debug.Log(invItem.DisplayName+" has is favorite, "+ invItem.IsFavorite);
         }
-        if (iItem.CustomData != null && iItem.CustomData.TryGetValue("is_equipped", out isEquipKey))
+
+        //the equipment may have custom data on iteminstance server-side
+        if (invItem.IsEquipment() && iItem.CustomData != null && iItem.CustomData.TryGetValue("is_equipped", out isEquipKey))
         {
             invItem.IsEquipped = bool.Parse(isEquipKey);
-            //Debug.Log(invItem.DisplayName + " has is equipped, " + invItem.IsEquipped);
         }
+
+        //but the first time (after purchasing item) it will get the result from InitializePurchasedItem server-side
+        //invItem will NOT have customdata on its data the first time, it is added just after getting the result
+        //(at this point it's added server side but not client side yet, we'll add it manually to client data)
+        else if (invItem.IsEquipment() && equippedCustom != null && equippedCustom["is_equipped"] != null)
+        {
+            invItem.IsEquipped = equippedCustom["is_equipped"].AsBool;
+        }
+
         return invItem;
     }
 
-    public static void AddInventoryItem(ItemInstance newItem, List<FMInventoryItem> invItems, CatalogItem catalogItem) {
+    public static void AddInventoryItem(ItemInstance newItem, List<FMInventoryItem> invItems, CatalogItem catalogItem)
+    {
+        AddInventoryItem(newItem, false, invItems, catalogItem);
+    }
+
+    public static FMInventoryItem AddInventoryItem(ItemInstance newItem,bool equip, List<FMInventoryItem> invItems, CatalogItem catalogItem) {
         Debug.Log("inventory items count "+invItems.Count);
         //add to inventry
         FMInventoryItem iItem = invItems.Find(x => x.CatalogID.Equals(newItem.ItemInstanceId));
@@ -69,14 +107,34 @@ public class FMPlayFabInventory : MonoBehaviour
         //if the item was already in inventory
         if (iItem != null && catalogItem.IsStackable) {
             iItem.Amount += 1;
-            return;
+            return iItem;
         }
 
         //else, we add it to the inventory
         if (iItem == null){
-            invItems.Add(CreateInventoryItem(catalogItem, newItem));
-            Debug.Log("added to inventory items");
-        }        
+            //invItems.Add(CreateInventoryItem(catalogItem, newItem));
+            //Debug.Log("added to inventory items");
+            if (!catalogItem.ItemClass.Equals("Equipment"))
+            {
+                iItem = CreateInventoryItem(catalogItem, newItem);
+                invItems.Add(iItem);
+                return iItem;
+            }
+
+            //inventory item is already on playfab, so we will add custom data before adding it here
+            PlayfabUtils.Instance.InitializePurchasedItem(newItem.ItemInstanceId, equip, result =>
+            {
+                JSONNode iItemCustomData = null;
+                if (JSON.Parse(result.FunctionResult.ToString())["custom_data"] != null)
+                {
+                    iItemCustomData = JSON.Parse(result.FunctionResult.ToString())["custom_data"];
+                    Debug.Log("getting custom data of item " + newItem.ItemInstanceId);
+                }
+                iItem = CreateInventoryItem(catalogItem, newItem, iItemCustomData);
+                invItems.Add(iItem);
+            }, error => Debug.Log("Error on initializing purchased item - " + error.ErrorMessage));
+        }
+        return iItem;
     }
 
     /// <summary>
@@ -102,6 +160,25 @@ public class FMPlayFabInventory : MonoBehaviour
         PlayfabUtils.Instance.ExecuteCloudscript("SetEquipmentSlots", args, result, error);
     }
 
+    /// <summary>
+    /// updating local equipment slot JSON  on playfab
+    /// </summary>
+    /// <param name="updatedSlots"></param>
+    /// <param name="result"></param>
+    /// <param name="error"></param>
+    public static void UpdateUserEquipment(List<FMInventorySlot> updatedSlots, Action<ExecuteCloudScriptResult> result, Action<PlayFabError> error)
+    {
+        //create Json from current list
+        JSONNode json = JSON.Parse("{}");
+        for (int i = 0; i < updatedSlots.Count; i++)
+        {
+            json[updatedSlots[i].SlotType.ToString()] = updatedSlots[i].CurrentItem;
+        }
+
+        object args = new { slots = json.ToString() };
+        PlayfabUtils.Instance.ExecuteCloudscript("SetEquipmentSlots", args, result, error);
+    }
+
     public static FMInventoryItem GetInventoryItemFromCatalogID(CatalogItem cItem)
     {
         return Items.Find(x => x.CatalogID.Equals(cItem.ItemId));
@@ -121,7 +198,7 @@ public class FMPlayFabInventory : MonoBehaviour
 
     public static void StoreSlotsFromJson(GetUserDataResult res)
     {
-        JSONNode userEquipmentJSONData = JSON.Parse(res.Data["si_user_equipment"].Value);
+        JSONNode userEquipmentJSONData = JSON.Parse(res.Data["fm_user_equipment"].Value);
         StoreSlotsFromJson(userEquipmentJSONData);
     }
 
@@ -175,4 +252,41 @@ public class FMPlayFabInventory : MonoBehaviour
         }
         return EquipmentSlotsType.None;
     }
+
+    public static List<FMInventorySlot> CheckClientSlotsChanges()
+    {
+        List<FMInventorySlot> updateSlots = new List<FMInventorySlot>();
+
+        List<FMInventorySlot> slots = ClientSessionData.Instance.Slots;
+        for (int i = 0; i < SlotJSON.AsArray.Count; i++)
+        {
+            EquipmentSlotsType jsonSlotKey = GetSlotsName(SlotJSON[i]);
+            Debug.Log("slot Type "+jsonSlotKey.ToString());
+            Debug.Log("slots " + slots.Count);
+            FMInventorySlot slot = slots.Find(x => x.SlotType.Equals(jsonSlotKey));
+            Debug.Log(slot);//TODOnrevisar wy y why store
+
+            string jsonValue = SlotJSON[i][slot.SlotType.ToString()].Value;
+
+            if (slot != null && !slot.CurrentItem.Equals(jsonValue))
+            {
+                updateSlots.Add(slot);
+            }
+        }
+
+        return updateSlots;
+    }
+
+    //TODO make one for favorites as well
+    //            item.Item.IsFavorite = item.isFavorite;
+    //            JSONNode node = JSON.Parse("{}");
+    //            node.Add("item", item.Item.InstanceID);
+    //            node.Add("is_favorite", item.isFavorite);         
+    //            //json[i]["item"] = item.Item.InstanceID;
+    //            //json[i]["is_favorite"] = item.isFavorite;
+    //            if (item.Item.IsEquipment())
+    //            {
+    //                node.Add("is_equipped", item.Item.IsEquipped);
+    //                //json[i]["is_equipped"] = item.Item.IsEquipped;
+    //            }
 }

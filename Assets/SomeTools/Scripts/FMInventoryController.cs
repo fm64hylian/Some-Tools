@@ -254,46 +254,79 @@ public class FMInventoryController : MonoBehaviour
         return string.Compare(c1.ItemClass, c2.ItemClass);
     }
 
-    public void BackToHome()
-    {
-        List<FMInventoryItem> clientItems = ClientSessionData.Instance.InventoryItems;
-        JSONArray json = new JSONArray();
-        //send to server favorites and eqquiped items
-        for (int i = 0; i < grid.GetComponentsInChildren<Transform>(true).Length; i++){
-            FMInventoryItemUI item = grid.GetComponentsInChildren<Transform>(true)[i].GetComponent<FMInventoryItemUI>();
-            if (item != null) {                
-                item.Item.IsFavorite = item.isFavorite;
-                JSONNode node = JSON.Parse("{}");
-                node.Add("item", item.Item.InstanceID);
-                node.Add("is_favorite", item.isFavorite);         
-                //json[i]["item"] = item.Item.InstanceID;
-                //json[i]["is_favorite"] = item.isFavorite;
-                if (item.Item.IsEquipment())
-                {
-                    node.Add("is_equipped", item.Item.IsEquipped);
-                    //json[i]["is_equipped"] = item.Item.IsEquipped;
-                }
-                //saving on client
-                FMInventoryItem savedItem = ClientSessionData.Instance.InventoryItems.Find(x => x.InstanceID.Equals(item.Item.InstanceID));
-                if (savedItem != null) {
-                    savedItem = item.Item;
-                }
-                json[i] = node;
-            }
+    //el nuevo
+    public void BackToHome() {
+        //if there are any changes in client,  update playfab
+        List<FMInventorySlot> updateSlots = FMPlayFabInventory.CheckClientSlotsChanges();
+
+        for (int i = 0; i < updateSlots.Count; i++)
+        {
+            Debug.Log("slot: " + updateSlots[i].SlotType + " : " + updateSlots[i].CurrentItem);
         }
 
-        //if there was no changes, just go back
-        if (clientItems == ClientSessionData.Instance.InventoryItems) {
+        if (updateSlots.Count > 0)
+        {
+            FMPlayFabInventory.UpdateUserEquipment(updateSlots, result =>
+            {
+                FMPlayFabInventory.StoreSlotsFromJson(result);
+                Debug.Log("Equipped items updated, result " + result.FunctionResult.ToString());
+                SceneManager.LoadScene("Home");
+            }, error =>
+            {
+                Debug.Log("could not update Equipped items");
+            });
+        }
+        else
+        {
+            Debug.Log("No changes in inventory");
             SceneManager.LoadScene("Home");
-            Debug.Log("no changes");
-            return;
         }
-
-        Debug.Log("el json "+ json.ToString());
-        //calling playfab
-        PlayfabUtils.Instance.UpdateInventoryEquip(json, 
-            result => { Debug.Log("updated successfully"); }, error => { Debug.Log("error on update"); });
-
-        SceneManager.LoadScene("Home");
     }
+
+
+
+
+
+    //public void BackToHome()
+    //{
+    //    List<FMInventoryItem> clientItems = ClientSessionData.Instance.InventoryItems;
+    //    JSONArray json = new JSONArray();
+    //    //send to server favorites and eqquiped items
+    //    for (int i = 0; i < grid.GetComponentsInChildren<Transform>(true).Length; i++){
+    //        FMInventoryItemUI item = grid.GetComponentsInChildren<Transform>(true)[i].GetComponent<FMInventoryItemUI>();
+    //        if (item != null) {                
+    //            item.Item.IsFavorite = item.isFavorite;
+    //            JSONNode node = JSON.Parse("{}");
+    //            node.Add("item", item.Item.InstanceID);
+    //            node.Add("is_favorite", item.isFavorite);         
+    //            //json[i]["item"] = item.Item.InstanceID;
+    //            //json[i]["is_favorite"] = item.isFavorite;
+    //            if (item.Item.IsEquipment())
+    //            {
+    //                node.Add("is_equipped", item.Item.IsEquipped);
+    //                //json[i]["is_equipped"] = item.Item.IsEquipped;
+    //            }
+    //            //saving on client
+    //            FMInventoryItem savedItem = ClientSessionData.Instance.InventoryItems.Find(x => x.InstanceID.Equals(item.Item.InstanceID));
+    //            if (savedItem != null) {
+    //                savedItem = item.Item;
+    //            }
+    //            json[i] = node;
+    //        }
+    //    }
+
+    //    //if there were no changes, just go back
+    //    if (clientItems == ClientSessionData.Instance.InventoryItems) {
+    //        SceneManager.LoadScene("Home");
+    //        Debug.Log("no changes");
+    //        return;
+    //    }
+
+    //    Debug.Log("el json "+ json.ToString());
+    //    //calling playfab
+    //    PlayfabUtils.Instance.UpdateInventoryEquip(json, 
+    //        result => { Debug.Log("updated successfully"); }, error => { Debug.Log("error on update"); });
+
+    //    SceneManager.LoadScene("Home");
+    //}
 }

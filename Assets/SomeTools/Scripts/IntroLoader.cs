@@ -77,7 +77,7 @@ public class IntroLoader : MonoBehaviour
                         FMPlayfabReward.StoreItemsFromJson(titleRes);
 
                         ClientSessionData.Instance.Achievements = FMPlayfabAchievements.Items;
-                        ClientSessionData.Instance.Rewads = FMPlayfabReward.Items;
+                        ClientSessionData.Instance.Rewards = FMPlayfabReward.Items;
 
                         labLoading.text = "... Loading Title Data ...";
                         progress += 0.20f;
@@ -93,12 +93,12 @@ public class IntroLoader : MonoBehaviour
                             ClientSessionData.Instance.InventoryItems = FMPlayFabInventory.Items;
 
                             //get user equipped items (from ReadOnlyData)
-                            PlayfabUtils.Instance.GetUserReadOnlyData(new List<string>() { "si_user_equipment" },
+                            PlayfabUtils.Instance.GetUserReadOnlyData(new List<string>() { "fm_user_equipment" },
                                 useDataRes => {
                             //if created ,assign to client
-                            if (useDataRes.Data.ContainsKey("si_user_equipment"))
+                            if (useDataRes.Data.ContainsKey("fm_user_equipment"))
                                     {
-                                        Debug.Log("SI read only data");
+                                        Debug.Log("read only data");
                                         FMPlayFabInventory.StoreSlotsFromJson(useDataRes);
                                         SceneManager.LoadScene("Store", LoadSceneMode.Single);
                                     }
